@@ -5,16 +5,17 @@
 #include"VSamplingChannel.hh"
 class VPMTChannel:public VSamplingChannel{
   public:
-  VPMTChannel():
-  fSignalRangeBegin  (0),
-  fSignalRangeEnd    (0),
-  fNoiseRangeBegin   (50),
-  fNoiseRangeEnd     (0),
-  fPedestalRangeBegin(30),
-  fPedestalRangeEnd  (250) {}
+    VPMTChannel():
+      fGain              (1),
+      fSignalRangeBegin  (0),
+      fSignalRangeEnd    (0),
+      fNoiseRangeBegin   (50),
+      fNoiseRangeEnd     (51),
+      fPedestalRangeBegin(30),
+      fPedestalRangeEnd  (250) {}
     virtual ~VPMTChannel(){}
   public:
-    bool IsFired()const{return fFired;}
+    bool IsFired()const{return fPhEAbs>fFireThreshold;}
     void CalcPedestal();
 
     Short_t GetPedestal()const{return fPedestal;}
@@ -32,7 +33,7 @@ class VPMTChannel:public VSamplingChannel{
     double  GetTime2080LeadZeroCross ()const{return fTime2080LeadZeroCross;}
     double  GetTime2080LeadMid       ()const{return fTime2080LeadMid;}
     double  GetTimeHalfMax           ()const{return fTimeHalfMax;}
-    bool    HasOnePhEExact           ()const{return fPhEAbs>fOnePheRange.first&&fPhEAbs<fOnePheRange.second;}
+    bool    IsSinglePartBeam         ()const{return fOneParticleRangeBegin<fPhEAbs&&fPhEAbs<fOneParticleRangeEnd;}
 
     double GetPhE        ()const{return fPhE;}
     double GetPhEAbs     ()const{return fPhEAbs;}
@@ -74,11 +75,13 @@ class VPMTChannel:public VSamplingChannel{
     unsigned int fNoiseRangeEnd      ;
     unsigned int fPedestalRangeBegin ;
     unsigned int fPedestalRangeEnd   ;
+    unsigned int fOneParticleRangeBegin ;
+    unsigned int fOneParticleRangeEnd   ;
+    double fFireThreshold;
 
-    std::pair<unsigned,unsigned> fSignalRange;
-    std::pair<unsigned,unsigned> fNoiseRange;
-    std::pair<unsigned,unsigned> fPedestalRange;
-    bool fFired;
-    std::pair<double,double> fOnePheRange;
+    //std::pair<unsigned,unsigned> fSignalRange;
+    //std::pair<unsigned,unsigned> fNoiseRange;
+    //std::pair<unsigned,unsigned> fPedestalRange;
+    //std::pair<double,double> fOnePheRange;
 };
 #endif

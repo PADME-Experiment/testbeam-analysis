@@ -163,11 +163,6 @@ int main(int argc, char* argv[]){
     return 1;
   }
   catch(const fwk::Exception& e){
-    INFO("throwing ");
-    INFO("throwing ");
-    INFO("throwing ");
-    INFO("throwing ");
-    INFO("throwing ");
     INFO("throwing "+typeid(e).name());
     ERROR(e.GetWhat());
     return 1;

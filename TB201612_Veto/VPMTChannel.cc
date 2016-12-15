@@ -60,7 +60,7 @@ VPMTChannel::CalcTimeCharge()
   fPhEAbs*=-41.6/fGain;
   fPhENoise*=-41.6/fGain;
   fPhENoiseAbs*=-41.6/fGain;
-  fFired=fPhE>15;
+  //fFired=fPhE>15;
 
   double y20=fValMax*.2;
   double y50=fValMax*.5;

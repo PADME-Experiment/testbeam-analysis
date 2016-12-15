@@ -6,10 +6,10 @@ class R6427:public VPMTChannel{
     R6427(){
       fType="R6427";
       fGain=1;
+      fFireThreshold=14;
       fSignalRangeBegin  =400;
       fSignalRangeEnd    =600;
       fNoiseRangeEnd     =fNoiseRangeBegin+fSignalRangeEnd-fSignalRangeBegin;
-      fFired=false;
     }
 };
 #endif

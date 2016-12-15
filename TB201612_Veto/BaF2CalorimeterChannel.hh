@@ -6,7 +6,6 @@ class BaF2CalorimeterChannel:public VCalorimeterChannel{
     BaF2CalorimeterChannel(){
       fGain=1;
 
-      fFired=false;
     }
 };
 #endif

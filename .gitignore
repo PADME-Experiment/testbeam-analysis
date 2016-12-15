@@ -1,0 +1,16 @@
+*~
+*.d
+*.o
+*.db
+*.gz
+*.so
+*.ccd
+*.exe
+*.pyc
+*.dump
+*.root
+run_*
+.*.swp
+Session.vim
+html/
+*.pcm

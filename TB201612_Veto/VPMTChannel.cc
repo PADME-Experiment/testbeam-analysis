@@ -56,10 +56,11 @@ VPMTChannel::CalcTimeCharge()
   fTimeMean2/=fPhE2;
   fTimeMeanAbs/=fPhEAbs;
 
-  fPhE*=-41.6/fGain;
-  fPhEAbs*=-41.6/fGain;
-  fPhENoise*=-41.6/fGain;
-  fPhENoiseAbs*=-41.6/fGain;
+  // fGain*1e5
+  fPhE        *=-250/fGain;//-41.6/fGain;
+  fPhEAbs     *=-250/fGain;//-41.6/fGain;
+  fPhENoise   *=-250/fGain;//-41.6/fGain;
+  fPhENoiseAbs*=-250/fGain;//-41.6/fGain;
   //fFired=fPhE>15;
 
   double y20=fValMax*.2;

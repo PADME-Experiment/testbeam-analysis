@@ -35,6 +35,7 @@ class Histos{
     TH2F* hist2f_PhElectrChCor[fNChanMax][fNChanMax];
     TH2F* hist2f_PhElectrChCorAbs[fNChanMax][fNChanMax];
     TH2F* hist2f_PhElectrChCorAbsSinglePartBeam[fNChanMax][fNChanMax];
+    TH2F* hist2f_PhElectrChCorAbsSinglePartBeamVetoed[fNChanMax][fNChanMax];
 
     TH1F* hist1f_TrigJitter[fNTrigMax];
     TH2F* hist2f_TrigCum[fNTrigMax];

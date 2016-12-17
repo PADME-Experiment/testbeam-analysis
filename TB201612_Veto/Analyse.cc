@@ -109,7 +109,9 @@ Analyse::FillTimes()
         int jj=int(sigjj_it->first);
 
         if(true
-            &&int(chii.GetPhEAbs())/5==int(chjj.GetPhEAbs())/5
+            //&&int(chii.GetPhEAbs())/5==int(chjj.GetPhEAbs())/5
+            &&int(chii.GetPhEAbs())+5>int(chjj.GetPhEAbs())
+            &&int(chii.GetPhEAbs())-5<int(chjj.GetPhEAbs())
             &&fSignalChannels[Universe::eROCh::eCalo]->IsSinglePartBeam()
             &&!fSignalChannels[Universe::eROCh::eH3]->IsFired() //VTU
             &&!fSignalChannels[Universe::eROCh::eY4]->IsFired()
@@ -122,14 +124,15 @@ Analyse::FillTimes()
             &&chii.IsFired()
             &&chjj.IsFired()
           ){
-          fHists.hist2f_TimeDiffMeanTime         [ii][jj]->Fill((chii.GetTimeMean              () - chjj.GetTimeMean              ())/5./*ns*/,sqrt(chii.GetPhE()*chii.GetPhE()+chjj.GetPhE()*chjj.GetPhE()));
-          fHists.hist2f_TimeDiffMeanTime2        [ii][jj]->Fill((chii.GetTimeMean2             () - chjj.GetTimeMean2             ())/5./*ns*/,sqrt(chii.GetPhE()*chii.GetPhE()+chjj.GetPhE()*chjj.GetPhE()));
-          fHists.hist2f_TimeDiffMeanTimeAbs      [ii][jj]->Fill((chii.GetTimeMeanAbs           () - chjj.GetTimeMeanAbs           ())/5./*ns*/,sqrt(chii.GetPhE()*chii.GetPhE()+chjj.GetPhE()*chjj.GetPhE()));
-          fHists.hist2f_TimeDiff2080LeadTrailCros[ii][jj]->Fill((chii.GetTime2080LeadTrailCross() - chjj.GetTime2080LeadTrailCross())/5./*ns*/,sqrt(chii.GetPhE()*chii.GetPhE()+chjj.GetPhE()*chjj.GetPhE()));
-          fHists.hist2f_TimeDiff2080LeadZeroCros [ii][jj]->Fill((chii.GetTime2080LeadZeroCross () - chjj.GetTime2080LeadZeroCross ())/5./*ns*/,sqrt(chii.GetPhE()*chii.GetPhE()+chjj.GetPhE()*chjj.GetPhE()));
-          fHists.hist2f_TimeDiff2080Lead50       [ii][jj]->Fill((chii.GetTime2080LeadMid       () - chjj.GetTime2080LeadMid       ())/5./*ns*/,sqrt(chii.GetPhE()*chii.GetPhE()+chjj.GetPhE()*chjj.GetPhE()));
-          fHists.hist2f_TimeDiffHalfMaxValue     [ii][jj]->Fill((chii.GetTimeHalfMax           () - chjj.GetTimeHalfMax           ())/5./*ns*/,sqrt(chii.GetPhE()*chii.GetPhE()+chjj.GetPhE()*chjj.GetPhE()));
-          fHists.hist2f_TimeDiffMaxValue         [ii][jj]->Fill((chii.GetTimeMaxVal            () - chjj.GetTimeMaxVal            ())/5./*ns*/,sqrt(chii.GetPhE()*chii.GetPhE()+chjj.GetPhE()*chjj.GetPhE()));
+          fHists.hist2f_PhElectrChCorAbsSinglePartBeamVetoed[ii][jj]->Fill(chii.GetPhEAbs(),chjj.GetPhEAbs());
+          fHists.hist2f_TimeDiffMeanTime         [ii][jj]->Fill((chii.GetTimeMean              () - chjj.GetTimeMean              ())/5./*ns*/,sqrt(chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs()));
+          fHists.hist2f_TimeDiffMeanTime2        [ii][jj]->Fill((chii.GetTimeMean2             () - chjj.GetTimeMean2             ())/5./*ns*/,sqrt(chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs()));
+          fHists.hist2f_TimeDiffMeanTimeAbs      [ii][jj]->Fill((chii.GetTimeMeanAbs           () - chjj.GetTimeMeanAbs           ())/5./*ns*/,sqrt(chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs()));
+          fHists.hist2f_TimeDiff2080LeadTrailCros[ii][jj]->Fill((chii.GetTime2080LeadTrailCross() - chjj.GetTime2080LeadTrailCross())/5./*ns*/,sqrt(chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs()));
+          fHists.hist2f_TimeDiff2080LeadZeroCros [ii][jj]->Fill((chii.GetTime2080LeadZeroCross () - chjj.GetTime2080LeadZeroCross ())/5./*ns*/,sqrt(chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs()));
+          fHists.hist2f_TimeDiff2080Lead50       [ii][jj]->Fill((chii.GetTime2080LeadMid       () - chjj.GetTime2080LeadMid       ())/5./*ns*/,sqrt(chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs()));
+          fHists.hist2f_TimeDiffHalfMaxValue     [ii][jj]->Fill((chii.GetTimeHalfMax           () - chjj.GetTimeHalfMax           ())/5./*ns*/,sqrt(chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs()));
+          fHists.hist2f_TimeDiffMaxValue         [ii][jj]->Fill((chii.GetTimeMaxVal            () - chjj.GetTimeMaxVal            ())/5./*ns*/,sqrt(chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs()));
         }
       }
     }
@@ -165,7 +168,7 @@ Analyse::FillPhEDistr()
         if(true
             &&fSignalChannels[Universe::eROCh::eCalo]->IsSinglePartBeam()
           ){
-        fHists.hist2f_PhElectrChCorAbsSinglePartBeam[ii][jj]->Fill(chii.GetPhEAbs(),chjj.GetPhEAbs());
+          fHists.hist2f_PhElectrChCorAbsSinglePartBeam[ii][jj]->Fill(chii.GetPhEAbs(),chjj.GetPhEAbs());
         }
       }
     }
@@ -307,7 +310,7 @@ Analyse::Process(std::string infile)
   bRawEv->SetAddress(&rawEv);
 
   Int_t nevt = tRawEv->GetEntries();
-  printf("TTree RawEvents contains %d events\tfilename %s\n",nevt,infile.c_str());
+  //printf("TTree RawEvents contains %d events\tfilename %s\n",nevt,infile.c_str());
 
   // Set number of events to read
   std::cerr<<std::endl;
@@ -323,7 +326,7 @@ Analyse::Process(std::string infile)
     UChar_t nBoards = rawEv->GetNADCBoards();
     //int curEvtNum=rawEv->GetEventNumber();
     if(iev%100==0){
-      fprintf(stderr,"\rGlob(%d%%, %d/%d) File(%d%%, %d/%d) Run nr %d Event nr %d ADC boards %d    ",
+      fprintf(stderr,"Glob(%d%%, %d/%d) File(%d%%, %d/%d) Run nr %d Event nr %d ADC boards %d    \r",
           fNEvtProcessed*100/fNEvtToProcess,
           fNEvtProcessed,fNEvtToProcess,
           iev*100/nevt,

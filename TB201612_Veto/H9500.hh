@@ -5,8 +5,8 @@ class H9500:public VPMTChannel{
   public:
     H9500(){
       fType="H9500";
-      fGain=1;
-      fFireThreshold=14;
+      fGain=6.5; //E5
+      fFireThreshold=11;//6;
       fSignalRangeBegin  =330;
       fSignalRangeEnd    =420;
       fNoiseRangeEnd     =fNoiseRangeBegin+fSignalRangeEnd-fSignalRangeBegin;

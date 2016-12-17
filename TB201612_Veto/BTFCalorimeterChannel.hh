@@ -4,7 +4,7 @@
 class BTFCalorimeterChannel:public VCalorimeterChannel{
   public:
     BTFCalorimeterChannel(){
-      fGain=1;
+      fGain=6.009615;
       fSignalRangeBegin  =430;
       fSignalRangeEnd    =600;
       fNoiseRangeEnd     =fNoiseRangeBegin+fSignalRangeEnd-fSignalRangeBegin;

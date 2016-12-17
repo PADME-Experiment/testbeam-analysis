@@ -149,6 +149,9 @@ Histos::CreateHistos()
       name="PhElectrChCorAbsSinglePartBeam_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj);
       tmptobj=hist2f_PhElectrChCorAbsSinglePartBeam[ii][jj]=new TH2F(name.c_str(),title.c_str(),512,-50,400,512,-50,400);
       fAllObj.emplace("PhElectrChCorAbsSinglePartBeam",tmptobj);
+      name="PhElectrChCorAbsSinglePartBeamVetoed_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj);
+      tmptobj=hist2f_PhElectrChCorAbsSinglePartBeamVetoed[ii][jj]=new TH2F(name.c_str(),title.c_str(),512,-50,400,512,-50,400);
+      fAllObj.emplace("PhElectrChCorAbsSinglePartBeamVetoed",tmptobj);
 
 
       name="MeanTimeChanDif_"+chan_i_ss.str()+"-"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj);

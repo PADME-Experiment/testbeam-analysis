@@ -137,16 +137,37 @@ void sigma(){
 void TimeRes(const TFile&f, const std::string& outf){
   std::ofstream out(outf);
   out<<"TimeDiffMaxValue TimeDiffMaxValue_err TimeDiffHalfMaxValue TimeDiffHalfMaxValue_err TimeDiff2080LeadTrailCros TimeDiff2080LeadTrailCros_err TimeDiff2080LeadZeroCros TimeDiff2080LeadZeroCros_err TimeDiff2080Lead50 TimeDiff2080Lead50_err TimeDiffMeanTime TimeDiffMeanTime_err TimeDiffMeanTime2 TimeDiffMeanTime2_err TimeDiffMeanTimeAbs TimeDiffMeanTimeAbs_err"<<std::endl;;
-  for(int ch_i=8;ch_i<16;++ch_i) {
-    if(ch_i==12)ch_i++;
-    TH2F* hist2f_TimeDiffMaxValue         = (TH2F*)f.FindObjectAny(Form("TimeDiffMaxValue_%d_%d"         ,std::min(12,ch_i),std::max(12,ch_i)));
-    TH2F* hist2f_TimeDiffHalfMaxValue     = (TH2F*)f.FindObjectAny(Form("TimeDiffHalfMaxValue_%d_%d"     ,std::min(12,ch_i),std::max(12,ch_i)));
-    TH2F* hist2f_TimeDiff2080LeadTrailCros= (TH2F*)f.FindObjectAny(Form("TimeDiff2080LeadTrailCros_%d_%d",std::min(12,ch_i),std::max(12,ch_i)));
-    TH2F* hist2f_TimeDiff2080LeadZeroCros = (TH2F*)f.FindObjectAny(Form("TimeDiff2080LeadZeroCros_%d_%d" ,std::min(12,ch_i),std::max(12,ch_i)));
-    TH2F* hist2f_TimeDiff2080Lead50       = (TH2F*)f.FindObjectAny(Form("TimeDiff2080Lead50_%d_%d"       ,std::min(12,ch_i),std::max(12,ch_i)));
-    TH2F* hist2f_TimeDiffMeanTime         = (TH2F*)f.FindObjectAny(Form("TimeDiffMeanTime_%d_%d"         ,std::min(12,ch_i),std::max(12,ch_i)));
-    TH2F* hist2f_TimeDiffMeanTime2        = (TH2F*)f.FindObjectAny(Form("TimeDiffMeanTime2_%d_%d"        ,std::min(12,ch_i),std::max(12,ch_i)));
-    TH2F* hist2f_TimeDiffMeanTimeAbs      = (TH2F*)f.FindObjectAny(Form("TimeDiffMeanTimeAbs_%d_%d"      ,std::min(12,ch_i),std::max(12,ch_i)));
+
+
+  for(int ch_i=0;ch_i<24;++ch_i) {
+    int ref=ch_i<8?5:ch_i<16?13:22;
+    if(
+        ch_i== 1||
+        ch_i== 4||
+        ch_i== 6||
+        ch_i== 9||
+        ch_i==11||
+        ch_i==14||
+        ch_i==18||
+        ch_i==20)continue;
+    if(ch_i==ref)continue;
+    TH2F* hist2f_TimeDiffMaxValue         = dynamic_cast<TH2F*>(f.FindObjectAny(Form("TimeDiffMaxValue_%d_%d"         ,std::min(ref,ch_i),std::max(ref,ch_i))));
+    TH2F* hist2f_TimeDiffHalfMaxValue     = dynamic_cast<TH2F*>(f.FindObjectAny(Form("TimeDiffHalfMaxValue_%d_%d"     ,std::min(ref,ch_i),std::max(ref,ch_i))));
+    TH2F* hist2f_TimeDiff2080LeadTrailCros= dynamic_cast<TH2F*>(f.FindObjectAny(Form("TimeDiff2080LeadTrailCros_%d_%d",std::min(ref,ch_i),std::max(ref,ch_i))));
+    TH2F* hist2f_TimeDiff2080LeadZeroCros = dynamic_cast<TH2F*>(f.FindObjectAny(Form("TimeDiff2080LeadZeroCros_%d_%d" ,std::min(ref,ch_i),std::max(ref,ch_i))));
+    TH2F* hist2f_TimeDiff2080Lead50       = dynamic_cast<TH2F*>(f.FindObjectAny(Form("TimeDiff2080Lead50_%d_%d"       ,std::min(ref,ch_i),std::max(ref,ch_i))));
+    TH2F* hist2f_TimeDiffMeanTime         = dynamic_cast<TH2F*>(f.FindObjectAny(Form("TimeDiffMeanTime_%d_%d"         ,std::min(ref,ch_i),std::max(ref,ch_i))));
+    TH2F* hist2f_TimeDiffMeanTime2        = dynamic_cast<TH2F*>(f.FindObjectAny(Form("TimeDiffMeanTime2_%d_%d"        ,std::min(ref,ch_i),std::max(ref,ch_i))));
+    TH2F* hist2f_TimeDiffMeanTimeAbs      = dynamic_cast<TH2F*>(f.FindObjectAny(Form("TimeDiffMeanTimeAbs_%d_%d"      ,std::min(ref,ch_i),std::max(ref,ch_i))));
+    if(
+        hist2f_TimeDiffMaxValue         ==nullptr||
+        hist2f_TimeDiffHalfMaxValue     ==nullptr||
+        hist2f_TimeDiff2080LeadTrailCros==nullptr||
+        hist2f_TimeDiff2080LeadZeroCros ==nullptr||
+        hist2f_TimeDiff2080Lead50       ==nullptr||
+        hist2f_TimeDiffMeanTime         ==nullptr||
+        hist2f_TimeDiffMeanTime2        ==nullptr||
+        hist2f_TimeDiffMeanTimeAbs      ==nullptr)continue;
     out
       <<ch_i<<"  "
       <<hist2f_TimeDiffMaxValue         ->GetRMS(1) <<"  "   <<hist2f_TimeDiffMaxValue         ->GetRMSError(1) <<"  " 
@@ -229,10 +250,10 @@ void FFTLowPass(std::vector<double>& re){
   std::vector<double> Re;Re.resize(nFreq);
   std::vector<double> Im;Im.resize(nFreq,0);
   re[1023]=
-  re[1022]=
-  re[1021]=
-  re[1020]=
-  re[1019];
+    re[1022]=
+    re[1021]=
+    re[1020]=
+    re[1019];
   for(unsigned f=1;f<nFreq;++f){
     for(unsigned t=0;t<nDat;++t){
       Re[f]+=re[t]*cos(df*t*f);
@@ -339,7 +360,7 @@ void FFTPlay(const TFile&f, const std::string& outf){
 int PostAnalysis(){
 
   TFile nonfft50("579.root", "READ");
-  //TimeRes  (nonfft50   ,Form("timeres.dat"    ,run_i));
+  TimeRes  (nonfft50,"timeres.dat");
   //Eff_Ineff(nonfft50   ,Form("effinef.dat"    ,run_i));
   Eff_IneffAbs(nonfft50,"effinef-abs.dat");
 

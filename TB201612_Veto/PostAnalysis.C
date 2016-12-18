@@ -359,10 +359,13 @@ void FFTPlay(const TFile&f, const std::string& outf){
 
 int PostAnalysis(){
 
-  TFile nonfft50("579.root", "READ");
-  TimeRes  (nonfft50,"timeres.dat");
-  //Eff_Ineff(nonfft50   ,Form("effinef.dat"    ,run_i));
-  Eff_IneffAbs(nonfft50,"effinef-abs.dat");
+  for(int run_i=500;run_i<1000;++run_i){
+    std::string filename=Form("%d.root",run_i);
+    TFile nonfft50(filename.c_str(), "READ");
+    if(nonfft50.GetSize()<=0)continue;
+    TimeRes  (nonfft50,Form("%d-timeres.dat",run_i));
+    Eff_IneffAbs(nonfft50,Form("%d-effinef-abs.dat",run_i));
+  }
 
   //PedestalCalc(f);
   //GainCalib(TFile ("nonfft-50.root", "READ"));

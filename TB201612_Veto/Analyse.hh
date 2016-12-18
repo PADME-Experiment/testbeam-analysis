@@ -37,7 +37,8 @@ class Analyse{
       FillPhEDistr();
       FillTimes();
       FillHistos();
-      //FillOscCumulatives();
+      FillOscCumulatives();
+      //MakeFFT();
     }
     void PrepareChannelsForAnal();
     void FillHistos();

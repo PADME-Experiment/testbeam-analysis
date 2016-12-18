@@ -72,6 +72,19 @@ Analyse::HWDestr()
 
 void
 Analyse::FillOscCumulatives(){
+  if(
+      !fSignalChannels[Universe::eROCh::eCalo]->IsSinglePartBeam()
+      ||fSignalChannels[Universe::eROCh::eH3]->IsFired() //VTU
+      ||fSignalChannels[Universe::eROCh::eY4]->IsFired()
+      ||fSignalChannels[Universe::eROCh::eH5]->IsFired() //VBU
+      ||fSignalChannels[Universe::eROCh::eX5]->IsFired()
+      ||fSignalChannels[Universe::eROCh::eH2]->IsFired() //VTD
+      ||fSignalChannels[Universe::eROCh::eY5]->IsFired()
+      ||fSignalChannels[Universe::eROCh::eH1]->IsFired() //VBD
+      ||fSignalChannels[Universe::eROCh::eX4]->IsFired()
+    )return;
+  static int nfilled=0;
+  if(nfilled++>1000)return;
 #pragma omp parallel
   for(auto sig_it=fSignalChannels.begin();sig_it!=fSignalChannels.end();++sig_it){
 #pragma omp single nowait
@@ -82,6 +95,8 @@ Analyse::FillOscCumulatives(){
       for(UShort_t s=0;s<1024;s++){
         fHists.hist2f_OscCum[chan_i]->Fill(s,ch.GetVal(s));
         fHists.hist2f_OscCumT0Fixed[chan_i]->Fill(s,ch.GetValT0Ped(s));
+        if(nfilled<100)
+          fHists.hist2f_SignalStudy       [chan_i]->SetBinContent(s+1,nfilled,-ch.GetValT0Ped(s));
       }
     }
   }
@@ -125,6 +140,11 @@ Analyse::FillTimes()
             &&chjj.IsFired()
           ){
           fHists.hist2f_PhElectrChCorAbsSinglePartBeamVetoed[ii][jj]->Fill(chii.GetPhEAbs(),chjj.GetPhEAbs());
+
+          fHists.hist2f_PhElectrChCorFFTAbsSinglePartBeamVetoed[ii][jj]->Fill(chii.GetPhEAbsLowPass(),chjj.GetPhEAbsLowPass());
+          fHists.hist2f_TimeDiffMeanTimeFFT      [ii][jj]->Fill((chii.GetTimeMeanLowPass       () - chjj.GetTimeMeanLowPass       ())/5./*ns*/,sqrt(chii.GetPhEAbsLowPass()*chii.GetPhEAbsLowPass()+chjj.GetPhEAbsLowPass()*chjj.GetPhEAbsLowPass()));
+          fHists.hist2f_TimeDiffMeanTimeFFTAbs   [ii][jj]->Fill((chii.GetTimeMeanAbsLowPass    () - chjj.GetTimeMeanAbsLowPass    ())/5./*ns*/,sqrt(chii.GetPhEAbsLowPass()*chii.GetPhEAbsLowPass()+chjj.GetPhEAbsLowPass()*chjj.GetPhEAbsLowPass()));
+
           fHists.hist2f_TimeDiffMeanTime         [ii][jj]->Fill((chii.GetTimeMean              () - chjj.GetTimeMean              ())/5./*ns*/,sqrt(chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs()));
           fHists.hist2f_TimeDiffMeanTime2        [ii][jj]->Fill((chii.GetTimeMean2             () - chjj.GetTimeMean2             ())/5./*ns*/,sqrt(chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs()));
           fHists.hist2f_TimeDiffMeanTimeAbs      [ii][jj]->Fill((chii.GetTimeMeanAbs           () - chjj.GetTimeMeanAbs           ())/5./*ns*/,sqrt(chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs()));
@@ -177,21 +197,33 @@ Analyse::FillPhEDistr()
   void
 Analyse::MakeFFT()
 {
+  if(
+      !fSignalChannels[Universe::eROCh::eCalo]->IsSinglePartBeam()
+      ||fSignalChannels[Universe::eROCh::eH3]->IsFired() //VTU
+      ||fSignalChannels[Universe::eROCh::eY4]->IsFired()
+      ||fSignalChannels[Universe::eROCh::eH5]->IsFired() //VBU
+      ||fSignalChannels[Universe::eROCh::eX5]->IsFired()
+      ||fSignalChannels[Universe::eROCh::eH2]->IsFired() //VTD
+      ||fSignalChannels[Universe::eROCh::eY5]->IsFired()
+      ||fSignalChannels[Universe::eROCh::eH1]->IsFired() //VBD
+      ||fSignalChannels[Universe::eROCh::eX4]->IsFired()
+    )return;
+  Universe& uni=Universe::GetInstance();
   static int nfilled=0;
   if( true
-      //&&chan[16].IsSinglePartBeam()
-      &&nfilled<0//100
+      &&nfilled<100
     ){
+    INFO("FFT nfilled "+std::to_string(nfilled));
     nfilled++;
     for(auto sigii_it=fSignalChannels.begin();sigii_it!=fSignalChannels.end();++sigii_it){
       int ch_i=int(sigii_it->first);
       VPMTChannel& ch=*sigii_it->second;
-      std::ofstream of("fft/"+ch.GetName()+"-"+std::to_string(nfilled));
+      std::ofstream of("fft/"+uni.GetROName(ch_i)+"-"+std::to_string(nfilled));
       of<<"sig"<<std::endl;
       for(unsigned s=0;s<1024;++s){
         of<<ch.GetValT0Ped(s)<<std::endl;;
       }
-      for(int cut=0;cut<512;++cut){
+      for(int cut=0;cut<512;++cut) {
         std::cout<<nfilled<<"   "<<cut<<std::endl;
         std::cout<<ch_i<<std::endl;
         of<<std::endl;
@@ -200,9 +232,8 @@ Analyse::MakeFFT()
         of<<"f_{max}="<<int(100*(5000.*(512-cut)/1024))/100<<"MHz ("<<cut<<")"<<std::endl;
         for(unsigned s=0;s<1024;++s){
           of<<ch.GetValT0PedLowPass(s)<<std::endl;;
-          //fHists.hist2f_SignalStudy       [ch_i]->SetBinContent(s+1,nfilled,-ch.GetValT0Ped(s));
-          //fHists.hist2f_SignalStudyLowPass[ch_i]->SetBinContent(s+1,nfilled,-ch.GetValT0PedLowPass(s));
-          //fHists.hist2f_PedestalsStudy[ch_i]->SetBinContent(s+1,nfilled,-chan[ch_i].GetValT0Ped(s));
+          fHists.hist2f_SignalStudyLowPass[ch_i]->SetBinContent(s+1,nfilled,-ch.GetValT0PedLowPass(s));
+          //fHists.hist2f_PedestalsStudy    [ch_i]->SetBinContent(s+1,nfilled,-ch.GetValT0Ped(s));
         }
       }
       of.flush();
@@ -279,6 +310,7 @@ Analyse::PrepareChannelsForAnal()
       VPMTChannel& ch=*sig_it->second;
       ch.CalcPedestal();
       ch.SetT0(fTriggerChannels[chan_i/8]->GetT0());
+      ch.FFTLowPass(200);
       ch.CalcTimeCharge();
     }
   }
@@ -286,9 +318,9 @@ Analyse::PrepareChannelsForAnal()
   void
 Analyse::Process(std::string infile)
 {
-  std::stringstream info;
-  info <<fNEvtToProcess<<"  "<<fNEvtProcessed;
-  INFO(info.str());
+  //std::stringstream info;
+  //info <<fNEvtToProcess<<"  "<<fNEvtProcessed;
+  //INFO(info.str());
   if(fNEvtToProcess<=fNEvtProcessed){
     INFO("fNEvtToProcess limit reached. SKIP!");
     return;
@@ -325,13 +357,18 @@ Analyse::Process(std::string infile)
     // Show event header
     UChar_t nBoards = rawEv->GetNADCBoards();
     //int curEvtNum=rawEv->GetEventNumber();
-    if(iev%100==0){
-      fprintf(stderr,"Glob(%d%%, %d/%d) File(%d%%, %d/%d) Run nr %d Event nr %d ADC boards %d    \r",
-          fNEvtProcessed*100/fNEvtToProcess,
-          fNEvtProcessed,fNEvtToProcess,
-          iev*100/nevt,
-          iev,nevt,
-          rawEv->GetRunNumber(),rawEv->GetEventNumber(),nBoards);
+    if(iev%200==0){
+      std::stringstream info;
+      info
+        <<"Glob("
+        <<fNEvtProcessed*100/fNEvtToProcess<<"% "
+        <<fNEvtProcessed                   <<"/"
+        <<fNEvtToProcess                   <<") "
+        <<"File("
+        <<iev*100/nevt<<"% "
+        <<iev           <<"/"
+        <<nevt          <<") ";
+      INFO(info.str());
     }
 
 

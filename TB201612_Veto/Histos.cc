@@ -57,6 +57,10 @@ Histos::CreateHistos()
     tmptobj=hist1f_PhElectrAbsSinglePartBeam[ii]=new TH1F(name.c_str(),title.c_str(),512,-50,550);
     fAllObj.emplace("PhElectrAbsSinglePartBeam",tmptobj);
 
+    name ="PhElectrFFTAbsSinglePartBeam_ch_"+chan_i_ss.str(); title=name+" "+uni.GetROName(ii);
+    tmptobj=hist1f_PhElectrFFTAbsSinglePartBeam[ii]=new TH1F(name.c_str(),title.c_str(),512,-50,550);
+    fAllObj.emplace("PhElectrFFTAbsSinglePartBeam",tmptobj);
+
     name ="PhElectrEff_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii); title=name+" "+uni.GetROName(ii);
     tmptobj=hist1f_PhElectrEff[ii]=new TH1F(name.c_str(),title.c_str(),5120,-50,400);
     fAllObj.emplace("PhElectrEff",tmptobj);
@@ -83,52 +87,52 @@ Histos::CreateHistos()
     tmptobj=hist1f_MeanTimeDistribution[ii]=new TH1F(name.c_str(),title.c_str(),600,0,600);
     fAllObj.emplace("MeanTimeDistr",tmptobj);
 
-    name ="TimeMaxValue_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii); title=name+" "+uni.GetROName(ii);
-    tmptobj=hist1f_TimeMaxValue             [ii]=new TH1F(name.c_str(),title.c_str(),600,0,600);
-    fAllObj.emplace("TimeMaxValue",tmptobj);
-    name ="TimeHalfMaxValue_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii); title=name+" "+uni.GetROName(ii);
-    tmptobj=hist1f_TimeHalfMaxValue         [ii]=new TH1F(name.c_str(),title.c_str(),600,0,600);
-    fAllObj.emplace("TimeHalfMaxValue",tmptobj);
-    name ="Time2080LeadTrailCros_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii); title=name+" "+uni.GetROName(ii);
-    tmptobj=hist1f_Time2080LeadTrailCros    [ii]=new TH1F(name.c_str(),title.c_str(),600,0,600);
-    fAllObj.emplace("Time2080LeadTrailCros",tmptobj);
-    name ="Time2080LeadZeroCros_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii); title=name+" "+uni.GetROName(ii);
-    tmptobj=hist1f_Time2080LeadZeroCros     [ii]=new TH1F(name.c_str(),title.c_str(),600,0,600);
-    fAllObj.emplace("Time2080LeadZeroCros",tmptobj);
-    name ="Time2080Lead50_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii); title=name+" "+uni.GetROName(ii);
-    tmptobj=hist1f_Time2080Lead50           [ii]=new TH1F(name.c_str(),title.c_str(),600,0,600);
-    fAllObj.emplace("Time2080Lead50",tmptobj);
+    //name ="TimeMaxValue_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii); title=name+" "+uni.GetROName(ii);
+    //tmptobj=hist1f_TimeMaxValue             [ii]=new TH1F(name.c_str(),title.c_str(),600,0,600);
+    //fAllObj.emplace("TimeMaxValue",tmptobj);
+    //name ="TimeHalfMaxValue_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii); title=name+" "+uni.GetROName(ii);
+    //tmptobj=hist1f_TimeHalfMaxValue         [ii]=new TH1F(name.c_str(),title.c_str(),600,0,600);
+    //fAllObj.emplace("TimeHalfMaxValue",tmptobj);
+    //name ="Time2080LeadTrailCros_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii); title=name+" "+uni.GetROName(ii);
+    //tmptobj=hist1f_Time2080LeadTrailCros    [ii]=new TH1F(name.c_str(),title.c_str(),600,0,600);
+    //fAllObj.emplace("Time2080LeadTrailCros",tmptobj);
+    //name ="Time2080LeadZeroCros_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii); title=name+" "+uni.GetROName(ii);
+    //tmptobj=hist1f_Time2080LeadZeroCros     [ii]=new TH1F(name.c_str(),title.c_str(),600,0,600);
+    //fAllObj.emplace("Time2080LeadZeroCros",tmptobj);
+    //name ="Time2080Lead50_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii); title=name+" "+uni.GetROName(ii);
+    //tmptobj=hist1f_Time2080Lead50           [ii]=new TH1F(name.c_str(),title.c_str(),600,0,600);
+    //fAllObj.emplace("Time2080Lead50",tmptobj);
 
-    name ="TimeCor2080LeadTrailCros_2080LeadZeroCros_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
-    tmptobj=hist2f_TimeCor2080LeadTrailCros_2080LeadZeroCros[ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
-    fAllObj.emplace("TimeCor2080LeadTrailCros",tmptobj);
-    name ="TimeCor2080LeadTrailCros_2080Lead50_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
-    tmptobj=hist2f_TimeCor2080LeadTrailCros_2080Lead50      [ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
-    fAllObj.emplace("TimeCor2080LeadTrailCros",tmptobj);
-    name ="TimeCor2080LeadTrailCros_MeanTime_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
-    tmptobj=hist2f_TimeCor2080LeadTrailCros_MeanTime        [ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
-    fAllObj.emplace("TimeCor2080LeadTrailCros",tmptobj);
-    name ="TimeCor2080LeadTrailCros_MaxValue_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
-    tmptobj=hist2f_TimeCor2080LeadTrailCros_MaxValue        [ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
-    fAllObj.emplace("TimeCor2080LeadTrailCros",tmptobj);
-    name ="TimeCor2080LeadTrailCros_HalfMaxValue_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
-    tmptobj=hist2f_TimeCor2080LeadTrailCros_HalfMaxValue    [ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
-    fAllObj.emplace("TimeCor2080LeadTrailCros",tmptobj);
-    name ="TimeCorMaxValue_HalfMaxValue_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
-    tmptobj=hist2f_TimeCorMaxValue_HalfMaxValue             [ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
-    fAllObj.emplace("TimeCorMaxValue",tmptobj);
-    name ="TimeCorMeanTime_MaxValue_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
-    tmptobj=hist2f_TimeCorMeanTime_MaxValue                 [ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
-    fAllObj.emplace("TimeCorMeanTime",tmptobj);
-    name ="TimeCorMeanTime_HalfMaxValue_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
-    tmptobj=hist2f_TimeCorMeanTime_HalfMaxValue             [ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
-    fAllObj.emplace("TimeCorMeanTime",tmptobj);
-    name ="TimeCorMeanTime_2080Lead50_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
-    tmptobj=hist2f_TimeCorMeanTime_2080Lead50               [ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
-    fAllObj.emplace("TimeCorMeanTime",tmptobj);
-    name ="TimeCorMeanTime_2080LeadZeroCros_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
-    tmptobj=hist2f_TimeCorMeanTime_2080LeadZeroCros        [ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
-    fAllObj.emplace("TimeCorMeanTime",tmptobj);
+    //name ="TimeCor2080LeadTrailCros_2080LeadZeroCros_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
+    //tmptobj=hist2f_TimeCor2080LeadTrailCros_2080LeadZeroCros[ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
+    //fAllObj.emplace("TimeCor2080LeadTrailCros",tmptobj);
+    //name ="TimeCor2080LeadTrailCros_2080Lead50_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
+    //tmptobj=hist2f_TimeCor2080LeadTrailCros_2080Lead50      [ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
+    //fAllObj.emplace("TimeCor2080LeadTrailCros",tmptobj);
+    //name ="TimeCor2080LeadTrailCros_MeanTime_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
+    //tmptobj=hist2f_TimeCor2080LeadTrailCros_MeanTime        [ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
+    //fAllObj.emplace("TimeCor2080LeadTrailCros",tmptobj);
+    //name ="TimeCor2080LeadTrailCros_MaxValue_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
+    //tmptobj=hist2f_TimeCor2080LeadTrailCros_MaxValue        [ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
+    //fAllObj.emplace("TimeCor2080LeadTrailCros",tmptobj);
+    //name ="TimeCor2080LeadTrailCros_HalfMaxValue_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
+    //tmptobj=hist2f_TimeCor2080LeadTrailCros_HalfMaxValue    [ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
+    //fAllObj.emplace("TimeCor2080LeadTrailCros",tmptobj);
+    //name ="TimeCorMaxValue_HalfMaxValue_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
+    //tmptobj=hist2f_TimeCorMaxValue_HalfMaxValue             [ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
+    //fAllObj.emplace("TimeCorMaxValue",tmptobj);
+    //name ="TimeCorMeanTime_MaxValue_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
+    //tmptobj=hist2f_TimeCorMeanTime_MaxValue                 [ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
+    //fAllObj.emplace("TimeCorMeanTime",tmptobj);
+    //name ="TimeCorMeanTime_HalfMaxValue_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
+    //tmptobj=hist2f_TimeCorMeanTime_HalfMaxValue             [ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
+    //fAllObj.emplace("TimeCorMeanTime",tmptobj);
+    //name ="TimeCorMeanTime_2080Lead50_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
+    //tmptobj=hist2f_TimeCorMeanTime_2080Lead50               [ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
+    //fAllObj.emplace("TimeCorMeanTime",tmptobj);
+    //name ="TimeCorMeanTime_2080LeadZeroCros_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
+    //tmptobj=hist2f_TimeCorMeanTime_2080LeadZeroCros        [ii]=new TH2F(name.c_str(),title.c_str(),600,0,600,600,0,600);
+    //fAllObj.emplace("TimeCorMeanTime",tmptobj);
 
     name="MeanTimeDistr_Charge_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
     tmptobj=hist2f_MeanTimeDistribution_Charge[ii]=new TH2F(name.c_str(),title.c_str(),512,0-.5,1024-.5,500,-50,800);
@@ -153,6 +157,9 @@ Histos::CreateHistos()
       tmptobj=hist2f_PhElectrChCorAbsSinglePartBeamVetoed[ii][jj]=new TH2F(name.c_str(),title.c_str(),512,-50,400,512,-50,400);
       fAllObj.emplace("PhElectrChCorAbsSinglePartBeamVetoed",tmptobj);
 
+      name="PhElectrChCorFFTAbsSinglePartBeamVetoed_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj);
+      tmptobj=hist2f_PhElectrChCorFFTAbsSinglePartBeamVetoed[ii][jj]=new TH2F(name.c_str(),title.c_str(),512,-50,400,512,-50,400);
+      fAllObj.emplace("PhElectrChCorFFTAbsSinglePartBeamVetoed",tmptobj);
 
       name="MeanTimeChanDif_"+chan_i_ss.str()+"-"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj);
       tmptobj=hist1f_MeanTimeChanDif[ii][jj]=new TH1F(name.c_str(),title.c_str(),1000,-400,400);
@@ -184,6 +191,13 @@ Histos::CreateHistos()
       name ="TimeDiffMeanTimeAbs_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj)+lab;
       tmptobj=hist2f_TimeDiffMeanTimeAbs     [ii][jj]   =new TH2F(name.c_str(),title.c_str(),320,-80-.25,80-.25,200,-20,500);
       fAllObj.emplace("TimeDiffMeanTimeAbs",tmptobj);
+
+      name ="TimeDiffMeanTimeFFT_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj)+lab;
+      tmptobj=hist2f_TimeDiffMeanTimeFFT     [ii][jj]   =new TH2F(name.c_str(),title.c_str(),320,-80-.25,80-.25,200,-20,500);
+      fAllObj.emplace("TimeDiffMeanTimeFFT",tmptobj);
+      name ="TimeDiffMeanTimeFFTAbs_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj)+lab;
+      tmptobj=hist2f_TimeDiffMeanTimeFFTAbs     [ii][jj]   =new TH2F(name.c_str(),title.c_str(),320,-80-.25,80-.25,200,-20,500);
+      fAllObj.emplace("TimeDiffMeanTimeFFTAbs",tmptobj);
 
 
     }

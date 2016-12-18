@@ -1,12 +1,11 @@
 #!/usr/bin/env gnuplot
 #filename=
-datfile="effinef-abs.dat"
+print system("echo DATFILE=$DATFILE ./effinef.plt")
+datfiles=system("echo $DATFILE")
 set term png size 1280,800
 set term pdf size 12,8
-set o sprintf("%s.pdf",datfile);
 set  log y
 set grid xtics ytics mytics
-set title sprintf("%s",datfile);
 set yla "[%]"
 set xla "Threshold [nPhE]"
 set key Left left top noenhanced
@@ -58,18 +57,26 @@ ch==20?0:\
 ### Uncomment for all channels
 #exclude(ch)=1
 
+#set o sprintf("%s.pdf",datfile);
+set o "effinef.pdf"
+do for [datfile in datfiles]{
+set title sprintf("%s",datfile);
 
 p [-10:35][.01:100] \
     for [kk=16:23] datfile index kk  u ($2/exclude(kk)):3  w l lw 2              lc kk+1 title sprintf("%s err type 1(ineff)",channelname(kk)),\
     for [kk=16:23] datfile index kk  u ($2/exclude(kk)):4  w l lw 2 dashtype '_' lc kk+1 title sprintf("%s err type 2(noise)",channelname(kk))
+}
+do for [datfile in datfiles]{
+set title sprintf("%s",datfile);
 p [-10:35][.01:100] \
     for [kk=0:7]   datfile index kk  u ($2/exclude(kk)):3  w l lw 2              lc kk+1 title sprintf("%s err type 1(ineff)",channelname(kk)),\
     for [kk=0:7]   datfile index kk  u ($2/exclude(kk)):4  w l lw 2 dashtype '_' lc kk+1 title sprintf("%s err type 2(noise)",channelname(kk))
+}
+do for [datfile in datfiles]{
+set title sprintf("%s",datfile);
 p [-10:35][.01:100] \
     for [kk=8:15]  datfile index kk  u ($2/exclude(kk)):3  w l lw 2              lc kk+1 title sprintf("%s err type 1(ineff)",channelname(kk)),\
     for [kk=8:15]  datfile index kk  u ($2/exclude(kk)):4  w l lw 2 dashtype '_' lc kk+1 title sprintf("%s err type 2(noise)",channelname(kk))
-#p [-10:35][.01:50] \
-#    for [kk=24:26] datfile index kk  u 2:3  w l lw 2              lc kk+1 title sprintf("ch %d err type 1(ineff)",kk),\
-#    for [kk=24:26] datfile index kk  u 2:4  w l lw 2 dashtype '_' lc kk+1 title sprintf("ch %d err type 2(noise)",kk)
+}
 
 set o

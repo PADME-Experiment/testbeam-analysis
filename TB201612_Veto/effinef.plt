@@ -53,6 +53,36 @@ ch==18?0:\
 ch==20?0:\
 1)
 
+exclude(ch)=(\
+ch==1?0:\
+ch==3?0:\
+ch==4?0:\
+ch==6?0:\
+ch==9?0:\
+ch==11?0:\
+ch==12?0:\
+ch==14?0:\
+ch==16?0:\
+ch==17?0:\
+ch==18?0:\
+ch==20?0:\
+1)
+
+map(i)=(\
+i==1 ? 0:\
+i==2 ? 2:\
+i==3 ? 5:\
+i==4 ? 7:\
+i==5 ? 8:\
+i==6 ?10:\
+i==7 ?13:\
+i==8 ?15:\
+i==9 ?19:\
+i==10?21:\
+i==11?22:\
+i==12?23:\
+999)
+
 
 ### Uncomment for all channels
 #exclude(ch)=1
@@ -78,5 +108,14 @@ p [-10:35][.01:100] \
     for [kk=8:15]  datfile index kk  u ($2/exclude(kk)):3  w l lw 2              lc kk+1 title sprintf("%s err type 1(ineff)",channelname(kk)),\
     for [kk=8:15]  datfile index kk  u ($2/exclude(kk)):4  w l lw 2 dashtype '_' lc kk+1 title sprintf("%s err type 2(noise)",channelname(kk))
 }
+do for [datfile in datfiles]{
+set title sprintf("%s",datfile);
+p [-10:35][.01:100] \
+    for [kk=1: 4]  datfile index map(kk)  u ($2):3  w l lw 2 dashtype '-' lc kk title sprintf("%s err type 1(ineff)",channelname(map(kk))),\
+    for [kk=5: 8]  datfile index map(kk)  u ($2):3  w l lw 2               lc kk title sprintf("%s err type 1(ineff)",channelname(map(kk))),\
+    for [kk=9:12]  datfile index map(kk)  u ($2):3  w l lw 2 dashtype '.'  lc kk title sprintf("%s err type 1(ineff)",channelname(map(kk))),\
+    for [kk=1:12]  datfile index map(kk)  u ($2):4  w l lw 2 dashtype '_' lc kk title sprintf("%s err type 2(noise)",channelname(map(kk)))
+}
+
 
 set o

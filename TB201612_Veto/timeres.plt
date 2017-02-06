@@ -51,3 +51,18 @@ p [0:24] \
 }
 
 set o
+
+set o "timeresAbs_run.pdf";
+set grid
+set title "TimeDiffMeanTimeAbs"
+set yla "σ(t_{mid}-t_i)/√2"
+set xla "i^{th} Channel"
+#set key Left left top
+#set yra  [1.2:5.5]
+set yra  [.7:1.4]
+#set xra [7:16]
+p \
+for [run in "579 582 584 585 586"]  sprintf("%s-timeres.dat",run) u 1:($16/sqrt(2)):($17/sqrt(2))  w yerr lt run title sprintf("run %s",run),\
+for [run in "579 582 584 585 586"]  sprintf("%s-timeres.dat",run) u 1:($16/sqrt(2)):($17/sqrt(2))  w l lt run notit
+  set o
+

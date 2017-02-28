@@ -1,11 +1,14 @@
 #ifndef _Histos_hh_
 #define _Histos_hh_ 0
 
+#include"a.hh"
+
 #include<sstream>
 #include<map>
 
 #include"TH1F.h"
 #include"TH2F.h"
+#include"TGraph.h"
 #include"TFile.h"
 #include"TDirectory.h"
 #include"TTree.h"
@@ -13,16 +16,28 @@
 class Histos{
   private:
     std::string fOutRootFileName;
-
-
-
-
   public:
-    TH2F* hist2f_TrigCum[2];
-    TH1F* hist1f_TrigIntrSlope[2];
-    TH1F* hist1f_TrigIntrThres[2];
-    TH1F* hist1f_TrigDiffSlope;
-    TH1F* hist1f_TrigDiffThres;
+    TH1F*   hist1f_SqNoiseIntrSlope[gSqNoiseSlopes][gSqNoiseNoises];
+    TH1F*   hist1f_SqNoiseIntrThres[gSqNoiseSlopes][gSqNoiseNoises];
+    TH1F*   hist1f_SqNoiseDiffSlope[gSqNoiseSlopes][gSqNoiseNoises];
+    TH1F*   hist1f_SqNoiseDiffThres[gSqNoiseSlopes][gSqNoiseNoises];
+    TGraph* hist2f_SqNoiseOsc      [gSqNoiseSlopes][gSqNoiseNoises];
+
+    TH2F* hist1f_SqNoiseIntrSlopeSummary;
+    TH2F* hist1f_SqNoiseIntrThresSummary;
+    TH2F* hist1f_SqNoiseDiffSlopeSummary;
+    TH2F* hist1f_SqNoiseDiffThresSummary;
+
+    TH1F*   hist1f_SineIntrThres[gNSines][gSqNoiseNoises];
+    TH1F*   hist1f_SineDiffThres[gNSines][gSqNoiseNoises];
+    TH1F*   hist1f_SineIntrSlope[gNSines][gSqNoiseNoises];
+    TH1F*   hist1f_SineDiffSlope[gNSines][gSqNoiseNoises];
+    TH1F*   hist1f_SineIntrFFTPhase[gNSines][gSqNoiseNoises];
+    TH2F*   hist2f_SineDiffFFTPhase[gNSines][gSqNoiseNoises];
+    TGraph* hist2f_SineOsc[gNSines][gSqNoiseNoises];
+
+
+
     TH1F* hist1f_TrigDiffSine;
     TH2F* hist2f_phy_dif;
 
@@ -32,7 +47,7 @@ class Histos{
     std::multimap<std::string,TObject*>fAllObj;
 
   public:
-    Histos(const std::string& fn){
+    Histos(const std::string& fn) {
       fOutRootFileName = fn;
       CreateHistos();
     }

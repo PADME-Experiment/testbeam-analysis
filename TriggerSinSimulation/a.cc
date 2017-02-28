@@ -1,3 +1,4 @@
+#include"a.hh"
 #include<iostream>
 #include<fstream>
 #include<vector>
@@ -12,27 +13,26 @@
 #include<gsl/gsl_fft_halfcomplex.h>
 #include<gsl/gsl_fft_real.h>
 
+
+int GExpStep(int i){
+  return (2<<(i/2)|(1<<(i/2))*(i%2))-2; // ~ (√2)^(i-2)-1
+}
+
+
+
+
+
+
+
 class Signal{
   public:
     Signal(){
-      fSampl.resize(102800);
-    }
-    void Refill(){
-      Square();
-      //Zeroes();
-      Noise();
+      fSampl.resize(102900);
     }
     void Print(){
       for(int i=0;i<fSampl.size();++i){
         double t=i/100.;
         std::cout<<t<<"   "<<fSampl[i]<<std::endl;
-      }
-    }
-    void Sine(double freq=1){
-      double phy0=2*acos(-1)*rand()/RAND_MAX;
-      for(int i=0;i<fSampl.size();++i){
-        double t=i/100.;
-        fSampl[i]+=sin(t*freq/2./acos(-1)+phy0)*100;
       }
     }
     void SigDump(){
@@ -57,14 +57,14 @@ class Signal{
       f<<*fft.rbegin()<<"  "<<0<<std::endl;
     }
     std::vector<double>& GetSamples(){return fSampl;}
-  private:
-    void Zeroes(){
+
+    void Zerofy(){
       for(int i=0;i<fSampl.size();++i){
         fSampl[i]=0;
       }
     }
-    void Square(int step=12/*samples*/){
-      double x1=100 , x2=x1+step;
+    void Square(int step=1200/*samples*/){
+      double x1=150-step/200. , x2=150+step/200.;
       double y1=1000, y2=0;
       for(int i=0;i<fSampl.size();++i){
         double t=i/100.;
@@ -87,13 +87,22 @@ class Signal{
           *it-=-log(1.*rand()/RAND_MAX)*ampl;
       }
     }
+    double Sine(double tc=1,double ampl=100){
+      double phy=rand()/RAND_MAX; //[0;1)
+      for(int i=0;i<fSampl.size();++i){
+        double t=i/100.;
+        fSampl[i]+=sin(2*acos(-1)*(t/tc+phy))*ampl;
+      }
+      return phy;
+    }
+  private:
     std::vector<double> fSampl;
 };
 
 class Channel{
   public:
     Channel(Signal& s):fDat(s.GetSamples()){
-      fShift=int(350.*rand()/RAND_MAX);
+      fShift=int(500.*rand()/RAND_MAX);
       fSamples.resize(1024);
       for(int s=0;s<1024;++s){
         fSamples[s]=fDat[s*100+fShift];
@@ -117,7 +126,9 @@ class Channel{
       double sy=0;
       int t=0;
       while(fSamples[t]>750)++t;
-      while(fSamples[t]>250){
+      --t;
+      int count=0;
+      do{
         double sig=1;
         double invssig=1./sig/sig;
         s  +=invssig;
@@ -125,26 +136,28 @@ class Channel{
         sxx+=t*t*invssig;
         sxy+=t*fSamples[t]*invssig;
         sy +=fSamples[t]*invssig;
+        ++count;
         ++t;
-      }
+      } while(fSamples[t]>250||count<2);
       double delta=s*sxx-sx*sx;
       double a=(sxx*sy-sx*sxy)/delta;
       double b=(s*sxy-sx*sy)/delta;
       fT0=(500-a)/b;
     }
     const auto& GetSamples(){return fSamples;}
-    void CalcT0Sine(int f=26){
+    double CalcT0Sine(double tau){
       double re=0,im=0;
       int nDat=fSamples.size();
       const double df=-2*acos(-1.)/nDat;
       for(unsigned t=0;t<nDat;++t){
-        re+=fSamples[t]*cos(df*t*f);
-        im+=fSamples[t]*sin(df*t*f);
+        re+=fSamples[t]*cos(df*t/tau);
+        im+=fSamples[t]*sin(df*t/tau);
       }
-      fPhy=atan2(im,re);
-      //fPhy=atan(re/im);
+      double phy=atan2(im,re)/2./acos(-1);
+      double rho=sqrt(re*re+im*im);
+      //double phy=atan(re/im);
+      fT0=tau*phy;
     }
-    double GetPhy(){return fPhy;}
     void FFTDump(const std::string& fn){
       std::vector<double> fft=fSamples;
       //fft.resize(131072,0);
@@ -174,50 +187,126 @@ class Channel{
     std::vector<double>fSamples;
     int fShift;
     double fT0;
-    double fPhy;
 };
+
+void CalcSQN(Histos& hists){
+  Signal sig;
+
+  std::fstream sqnIntrThres("sqnIntrThres",std::fstream::out);
+  std::fstream sqnDiffThres("sqnDiffThres",std::fstream::out);
+  std::fstream sqnIntrSlope("sqnIntrSlope",std::fstream::out);
+  std::fstream sqnDiffSlope("sqnDiffSlope",std::fstream::out);
+
+  for(int slope_i=0;slope_i<gSqNoiseSlopes;++slope_i){
+    for(int noise_i=0;noise_i<gSqNoiseNoises;++noise_i){
+      std::cerr
+        <<"slope "<<slope_i<<"/"<<gSqNoiseSlopes
+        <<"   "
+        <<"noise "<<noise_i<<"/"<<gSqNoiseNoises
+        <<std::endl;
+      sig.Square(GExpStep(slope_i));
+      sig.Noise (GExpStep(noise_i));
+      for(int i=0;i<5000;++i){
+        Channel ch1(sig),ch2(sig);
+        ch1.CalcT0Thres(); ch2.CalcT0Thres();
+        hists.hist1f_SqNoiseIntrThres[slope_i][noise_i]->Fill(ch1.GetT0()+ch1.GetShift()/100.);
+        hists.hist1f_SqNoiseDiffThres[slope_i][noise_i]->Fill((ch1.GetT0()-ch2.GetT0())/sqrt(2.));
+        ch1.CalcT0Slope(); ch2.CalcT0Slope();
+        hists.hist1f_SqNoiseIntrSlope[slope_i][noise_i]->Fill(ch1.GetT0()+ch1.GetShift()/100.);
+        hists.hist1f_SqNoiseDiffSlope[slope_i][noise_i]->Fill((ch1.GetT0()-ch2.GetT0())/sqrt(2.));
+        if(i==0){
+          const auto&chref=ch1.GetSamples();
+          for(int t=0;t<chref.size();++t){
+            hists.hist2f_SqNoiseOsc[slope_i][noise_i]->SetPoint(t,t,chref[t]);
+          }
+        }
+      }
+
+      if(hists.hist1f_SqNoiseIntrThres[slope_i][noise_i]->Integral()>hists.hist1f_SqNoiseIntrThres[slope_i][noise_i]->GetEntries()*.85)sqnIntrThres<<GExpStep(slope_i)<<"  "<<GExpStep(noise_i)<<"   "<<hists.hist1f_SqNoiseIntrThres[slope_i][noise_i]->GetStdDev()<<"   "<<hists.hist1f_SqNoiseIntrThres[slope_i][noise_i]->GetStdDevError()<<std::endl;
+      if(hists.hist1f_SqNoiseDiffThres[slope_i][noise_i]->Integral()>hists.hist1f_SqNoiseDiffThres[slope_i][noise_i]->GetEntries()*.85)sqnDiffThres<<GExpStep(slope_i)<<"  "<<GExpStep(noise_i)<<"   "<<hists.hist1f_SqNoiseDiffThres[slope_i][noise_i]->GetStdDev()<<"   "<<hists.hist1f_SqNoiseDiffThres[slope_i][noise_i]->GetStdDevError()<<std::endl;
+      if(hists.hist1f_SqNoiseIntrSlope[slope_i][noise_i]->Integral()>hists.hist1f_SqNoiseIntrSlope[slope_i][noise_i]->GetEntries()*.85)sqnIntrSlope<<GExpStep(slope_i)<<"  "<<GExpStep(noise_i)<<"   "<<hists.hist1f_SqNoiseIntrSlope[slope_i][noise_i]->GetStdDev()<<"   "<<hists.hist1f_SqNoiseIntrSlope[slope_i][noise_i]->GetStdDevError()<<std::endl;
+      if(hists.hist1f_SqNoiseDiffSlope[slope_i][noise_i]->Integral()>hists.hist1f_SqNoiseDiffSlope[slope_i][noise_i]->GetEntries()*.85)sqnDiffSlope<<GExpStep(slope_i)<<"  "<<GExpStep(noise_i)<<"   "<<hists.hist1f_SqNoiseDiffSlope[slope_i][noise_i]->GetStdDev()<<"   "<<hists.hist1f_SqNoiseDiffSlope[slope_i][noise_i]->GetStdDevError()<<std::endl;
+
+    }
+    sqnIntrThres<<std::endl;
+    sqnDiffThres<<std::endl;
+    sqnIntrSlope<<std::endl;
+    sqnDiffSlope<<std::endl;
+  }
+  sqnIntrThres.close();
+  sqnDiffThres.close();
+  sqnIntrSlope.close();
+  sqnDiffSlope.close();
+}
+void CalcSin(Histos& hists){
+  Signal sig;
+
+  std::fstream sinIntrThres("sinIntrThres",std::fstream::out);
+  std::fstream sinDiffThres("sinDiffThres",std::fstream::out);
+  std::fstream sinIntrSlope("sinIntrSlope",std::fstream::out);
+  std::fstream sinDiffSlope("sinDiffSlope",std::fstream::out);
+  std::fstream sinIntrSine("sinIntrSine",std::fstream::out);
+  std::fstream sinDiffSine("sinDiffSine",std::fstream::out);
+
+  for(int sine_i=0;sine_i<gNSines;++sine_i){
+    for(int noise_i=0;noise_i<gSqNoiseNoises;++noise_i){
+      std::cerr
+        <<"sine"<<sine_i<<"/"<<gNSines
+        <<"   "
+        <<"noise "<<noise_i<<"/"<<gSqNoiseNoises
+        <<std::endl;
+      sig.Square(GExpStep(300));
+      double const tau=(GExpStep(sine_i)+1)/3.;
+      double phy0=sig.Sine(tau,100);
+      sig.Noise (GExpStep(noise_i));
+      for(int i=0;i<500;++i){
+        Channel ch1(sig),ch2(sig);
+        ch1.CalcT0Thres(); ch2.CalcT0Thres();
+        hists.hist1f_SineIntrThres[sine_i][noise_i]->Fill(ch1.GetShift()/100.+ch1.GetT0());
+        hists.hist1f_SineDiffThres[sine_i][noise_i]->Fill((ch1.GetT0()-ch2.GetT0())/sqrt(2.));
+        ch1.CalcT0Slope(); ch2.CalcT0Slope();
+        hists.hist1f_SineIntrSlope[sine_i][noise_i]->Fill(ch1.GetShift()/100.+ch1.GetT0());
+        hists.hist1f_SineDiffSlope[sine_i][noise_i]->Fill((ch1.GetT0()-ch2.GetT0())/sqrt(2.));
+        ch1.CalcT0Sine(tau); ch2.CalcT0Sine(tau);
+        hists.hist1f_SineIntrFFTPhase[sine_i][noise_i]->Fill(ch1.GetT0()+phy0*tau);
+        //std::cout<<ch1.GetShift()/100.+ch1.GetT0()<<std::endl;
+        hists.hist2f_SineDiffFFTPhase[sine_i][noise_i]->Fill((ch1.GetT0()-ch2.GetT0())/sqrt(2.),ch1.GetShift()/100.-ch2.GetShift()/100.);
+        if(i==0){
+          const auto&chref=ch1.GetSamples();
+          for(int t=0;t<chref.size();++t){
+            hists.hist2f_SineOsc[sine_i][noise_i]->SetPoint(t,t,chref[t]);
+          }
+        }
+      }
+
+      if(hists.hist1f_SqNoiseIntrThres[sine_i][noise_i]->Integral()>hists.hist1f_SqNoiseIntrThres[sine_i][noise_i]->GetEntries()*.85)sinIntrThres<<GExpStep(sine_i)<<"  "<<GExpStep(noise_i)<<"   "<<hists.hist1f_SqNoiseIntrThres[sine_i][noise_i]->GetStdDev()<<"   "<<hists.hist1f_SqNoiseIntrThres[sine_i][noise_i]->GetStdDevError()<<std::endl;
+      if(hists.hist1f_SqNoiseDiffThres[sine_i][noise_i]->Integral()>hists.hist1f_SqNoiseDiffThres[sine_i][noise_i]->GetEntries()*.85)sinDiffThres<<GExpStep(sine_i)<<"  "<<GExpStep(noise_i)<<"   "<<hists.hist1f_SqNoiseDiffThres[sine_i][noise_i]->GetStdDev()<<"   "<<hists.hist1f_SqNoiseDiffThres[sine_i][noise_i]->GetStdDevError()<<std::endl;
+      if(hists.hist1f_SqNoiseIntrSlope[sine_i][noise_i]->Integral()>hists.hist1f_SqNoiseIntrSlope[sine_i][noise_i]->GetEntries()*.85)sinIntrSlope<<GExpStep(sine_i)<<"  "<<GExpStep(noise_i)<<"   "<<hists.hist1f_SqNoiseIntrSlope[sine_i][noise_i]->GetStdDev()<<"   "<<hists.hist1f_SqNoiseIntrSlope[sine_i][noise_i]->GetStdDevError()<<std::endl;
+      if(hists.hist1f_SqNoiseDiffSlope[sine_i][noise_i]->Integral()>hists.hist1f_SqNoiseDiffSlope[sine_i][noise_i]->GetEntries()*.85)sinDiffSlope<<GExpStep(sine_i)<<"  "<<GExpStep(noise_i)<<"   "<<hists.hist1f_SqNoiseDiffSlope[sine_i][noise_i]->GetStdDev()<<"   "<<hists.hist1f_SqNoiseDiffSlope[sine_i][noise_i]->GetStdDevError()<<std::endl;
+      if(hists.hist1f_SineIntrFFTPhase[sine_i][noise_i]->Integral()>hists.hist1f_SineIntrFFTPhase[sine_i][noise_i]->GetEntries()*.85)sinIntrSlope<<GExpStep(sine_i)<<"  "<<GExpStep(noise_i)<<"   "<<hists.hist1f_SineIntrFFTPhase[sine_i][noise_i]->GetStdDev()<<"   "<<hists.hist1f_SineIntrFFTPhase[sine_i][noise_i]->GetStdDevError()<<std::endl;
+      //if(hists.hist1f_SineDiffFFTPhase[sine_i][noise_i]->Integral()>hists.hist1f_SineDiffFFTPhase[sine_i][noise_i]->GetEntries()*.85)sinDiffSlope<<GExpStep(sine_i)<<"  "<<GExpStep(noise_i)<<"   "<<hists.hist1f_SineDiffFFTPhase[sine_i][noise_i]->GetStdDev()<<"   "<<hists.hist1f_SineDiffFFTPhase[sine_i][noise_i]->GetStdDevError()<<std::endl;
+
+    }
+    sinIntrThres<<std::endl;
+    sinDiffThres<<std::endl;
+    sinIntrSlope<<std::endl;
+    sinDiffSlope<<std::endl;
+    sinIntrSine <<std::endl;
+    sinDiffSine <<std::endl;
+  }
+  sinIntrThres.close();
+  sinDiffThres.close();
+  sinIntrSlope.close();
+  sinDiffSlope.close();
+  sinIntrSine.close();
+  sinDiffSine.close();
+}
 
 int main(){
   srand(time(NULL));
-  Signal sig;
   Histos hists("h.root");
-  sig.Refill();
-  sig.Sine();
-  sig.SigDump();
-  sig.FFTDump();
-  Channel c1(sig);
-  Channel c2(sig);
-  c1.FFTDump("ch1_fft.dat");
-  c1.SigDump("ch1_sig.dat");
-  c2.FFTDump("ch2_fft.dat");
-  c2.SigDump("ch2_sig.dat");
+  //CalcSQN(hists);
+  CalcSin(hists);
 
-  for(int i=0;i<10000;++i){
-    sig.Refill();
-    Channel ch1(sig);
-    Channel ch2(sig);
-    ch1.CalcT0Thres();
-    ch2.CalcT0Thres();
-    hists.hist1f_TrigIntrThres[0]->Fill(ch1.GetShift()/100.+ch1.GetT0());
-    hists.hist1f_TrigDiffThres->Fill(ch1.GetT0()-ch2.GetT0());
-    ch1.CalcT0Slope();
-    ch2.CalcT0Slope();
-    hists.hist1f_TrigIntrSlope[0]->Fill(ch1.GetShift()/100.+ch1.GetT0());
-    hists.hist1f_TrigDiffSlope->Fill(ch1.GetT0()-ch2.GetT0());
-    sig.Sine(1);
-    Channel chSine1(sig);
-    Channel chSine2(sig);
-    chSine1.CalcT0Sine();
-    chSine2.CalcT0Sine();
-
-    hists.hist2f_phy_dif->Fill(chSine1.GetShift()-chSine2.GetShift(),fmod(chSine1.GetPhy()-chSine2.GetPhy()+2*acos(-1),2*acos(-1)));
-
-    if(i==0){
-      const auto&sineref=chSine1.GetSamples();
-      for(int t=0;t<sineref.size();++t){
-        hists.hist2f_TrigCum[0]->Fill(t,sineref[t]);
-      }
-    }
-  }
   return 0;
 }

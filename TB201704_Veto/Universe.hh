@@ -24,6 +24,7 @@ class Universe{
       eB4S2,
       eB4S3,
       eB4S4,
+      eBTFCalo,
       eB5S1,
       eB5S2,
       eB5S3,
@@ -48,6 +49,7 @@ class Universe{
       e14 ,
       e15 ,
       e16 ,
+      eBTFCalo,
       eLast,
       NC
     };

@@ -30,6 +30,8 @@ Universe::LinksNames()
   fLinkRO2DetCh[eROCh::eB5S2    ]=eDetCh::NC;
   fLinkRO2DetCh[eROCh::eB5S3    ]=eDetCh::NC;
   fLinkRO2DetCh[eROCh::eB5S4    ]=eDetCh::NC;
+  fLinkRO2DetCh[eROCh::eBTFCalo ]=eDetCh::eBTFCalo;
+
 
   fROChNames[eROCh::eB1S1    ]="Board1SiPM1";
   fROChNames[eROCh::eB1S2    ]="Board1SiPM2";
@@ -47,10 +49,11 @@ Universe::LinksNames()
   fROChNames[eROCh::eB4S2    ]="Board4SiPM2";
   fROChNames[eROCh::eB4S3    ]="Board4SiPM3";
   fROChNames[eROCh::eB4S4    ]="Board4SiPM4";
-  fROChNames[eROCh::eB5S1    ]="Board5SiPM1";
-  fROChNames[eROCh::eB5S2    ]="Board5SiPM2";
-  fROChNames[eROCh::eB5S3    ]="Board5SiPM3";
-  fROChNames[eROCh::eB5S4    ]="Board5SiPM4";
+  //fROChNames[eROCh::eB5S1    ]="Board5SiPM1";
+  //fROChNames[eROCh::eB5S2    ]="Board5SiPM2";
+  //fROChNames[eROCh::eB5S3    ]="Board5SiPM3";
+  //fROChNames[eROCh::eB5S4    ]="Board5SiPM4";
+  fROChNames[eROCh::eBTFCalo ]="BTFCalo";
 
   for(auto it=fLinkRO2DetCh.begin();it!=fLinkRO2DetCh.end();++it){
     fLinkDet2ROCh.emplace(it->second,it->first);

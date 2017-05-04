@@ -13,7 +13,7 @@
 
 class Histos{
   private:
-    const static int fNChanMax=16;
+    const static int fNChanMax=17;
     const static int fNTrigMax=4;
     std::string fOutRootFileName;
 

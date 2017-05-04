@@ -38,6 +38,7 @@ Analyse::HWInit()
   fSignalChannels [Universe::eROCh::eB4S2    ]=new SiPM                 ();
   fSignalChannels [Universe::eROCh::eB4S3    ]=new SiPM                 ();
   fSignalChannels [Universe::eROCh::eB4S4    ]=new SiPM                 ();
+  fSignalChannels [Universe::eROCh::eBTFCalo ]=new BTFCalorimeterChannel();
 //  fSignalChannels [Universe::eROCh::eB5S1    ]=new SiPM                 ();
 //  fSignalChannels [Universe::eROCh::eB5S2    ]=new SiPM                 ();
 //  fSignalChannels [Universe::eROCh::eB5S3    ]=new SiPM                 ();
@@ -136,7 +137,7 @@ Analyse::FillTimes()
         VPMTChannel&chjj= *sigjj_it->second;
         int jj=int(sigjj_it->first);
 
-        if(true
+        if(true||true
             //&&int(chii.GetPhEAbs())/5==int(chjj.GetPhEAbs())/5
             &&int(chii.GetPhEAbs())+5>int(chjj.GetPhEAbs())
             &&int(chii.GetPhEAbs())-5<int(chjj.GetPhEAbs())
@@ -399,8 +400,8 @@ Analyse::Process(std::string infile)
     //      adcB->GetEventTimeTag(),adcB->GetActiveChannelMask(),adcB->GetAcceptedChannelMask(),nTrg,nChn);
     //  }
 
-    if(nTrg!=2) { WARNING("nTrg!=2  "+std::to_string(int(nTrg))); continue;}
-    if(nChn!=16){ WARNING("nChn!=16 "+std::to_string(int(nChn))); continue;}
+    if(nTrg!=3) { WARNING("nTrg!=3  "+std::to_string(int(nTrg))); continue;}
+    if(nChn!=17){ WARNING("nChn!=17 "+std::to_string(int(nChn))); continue;}
 
     // Loop over triggers
 #pragma omp parallel

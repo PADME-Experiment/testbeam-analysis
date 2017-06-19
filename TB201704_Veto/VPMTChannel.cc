@@ -43,8 +43,29 @@ VPMTChannel::CalcTimeCharge()
     fAllSampMin =(fAllSampMin>normcor_sample?normcor_sample:fAllSampMin);
     fAllSampMax =(fAllSampMax<normcor_sample?normcor_sample:fAllSampMax);
   }
-  fAllSampRMS=(fAllSampRMS/1024-fAllSampMean)/1024;
+  fAllSampRMS=(fAllSampRMS/1024-fAllSampMean*fAllSampMean)/1024;
   fAllSampMean/=1024;
+
+
+  fNoiseSampMean   =0;
+  fNoiseSampRMS    =0;
+  fNoiseSampMin    =9999;
+  fNoiseSampMax    =-9999;
+  fNoiseSampAbsSum =0;
+  for(unsigned val_i=0;val_i<400;++val_i){
+    const double normcor_sample=GetValT0Ped(val_i);
+    fNoiseSampAbsSum+=abs(normcor_sample);
+    fNoiseSampMean+=normcor_sample;
+    fNoiseSampRMS +=normcor_sample*normcor_sample;
+    fNoiseSampMin =(fNoiseSampMin>normcor_sample?normcor_sample:fNoiseSampMin);
+    fNoiseSampMax =(fNoiseSampMax<normcor_sample?normcor_sample:fNoiseSampMax);
+  }
+  fNoiseSampRMS=(fNoiseSampRMS/1024-fNoiseSampMean*fNoiseSampMean)/1024;
+  fNoiseSampMean/=1024;
+
+
+
+
 
   fPhE =0;
   fPhE2=0;

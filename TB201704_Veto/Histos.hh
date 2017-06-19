@@ -27,6 +27,7 @@ class Histos{
     TH1F* hist1f_PhElectr[fNChanMax];
     TH1F* hist1f_PhElectrAbs[fNChanMax];
     TH1F* hist1f_PhElectrAbsSinglePartBeam[fNChanMax];
+    TH1F* hist1f_PhElectrAbsDoublePartBeam[fNChanMax];
     TH1F* hist1f_PhElectrFFTAbsSinglePartBeam[fNChanMax];
     TH1F* hist1f_PhElectrEff[fNChanMax];
     TH1F* hist1f_PhElectrNoise[fNChanMax];
@@ -93,6 +94,10 @@ class Histos{
     TGraph* graph_RMSSamp_Time   [fNChanMax];
     TGraph* graph_MinSamp_Time   [fNChanMax];
     TGraph* graph_MaxSamp_Time   [fNChanMax];
+    TH1F*   hist1f_RMSSamp       [fNChanMax];
+    TGraph* graph_PPStab_Time    [fNChanMax];
+    TH1F*   hist1f_PPStab        [fNChanMax];
+    TH1F*   hist1f_lightCollectRto[4];
 
 
 

@@ -38,7 +38,7 @@ class Analyse{
       FillGraphTrends();
       FillTimes();
       FillHistos();
-      FillOscCumulatives();
+      //FillOscCumulatives();
       //MakeFFT();
     }
     void PrepareChannelsForAnal();

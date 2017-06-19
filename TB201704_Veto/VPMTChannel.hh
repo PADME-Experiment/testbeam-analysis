@@ -15,7 +15,7 @@ class VPMTChannel:public VSamplingChannel{
       fPedestalRangeEnd  (250) {}
     virtual ~VPMTChannel(){}
   public:
-    bool IsFired()const{return fPhEAbs>fFireThreshold;}
+    bool IsFired()const{return fPhE>fFireThreshold;}
     void CalcPedestal();
 
     Short_t GetPedestal()const{return fPedestal;}
@@ -39,6 +39,7 @@ class VPMTChannel:public VSamplingChannel{
     double  GetPhELowPass        ()const{return fPhELowPass;        }
     double  GetPhEAbsLowPass     ()const{return fPhEAbsLowPass;     }
     bool    IsSinglePartBeam         ()const{return fOneParticleRangeBegin<fPhEAbs&&fPhEAbs<fOneParticleRangeEnd;}
+    bool    IsDoublePartBeam         ()const{return fTwoParticleRangeBegin<fPhEAbs&&fPhEAbs<fTwoParticleRangeEnd;}
 
     double GetPhE        ()const{return fPhE;}
     double GetPhEAbs     ()const{return fPhEAbs;}
@@ -51,6 +52,12 @@ class VPMTChannel:public VSamplingChannel{
     double GetAllSampMin   ()const{return fAllSampMin   ;}
     double GetAllSampMax   ()const{return fAllSampMax   ;}
     double GetAllSampAbsSum()const{return fAllSampAbsSum;}
+
+    double GetNoiseSampMean  ()const{return fNoiseSampMean  ;}
+    double GetNoiseSampRMS   ()const{return fNoiseSampRMS   ;}
+    double GetNoiseSampMin   ()const{return fNoiseSampMin   ;}
+    double GetNoiseSampMax   ()const{return fNoiseSampMax   ;}
+    double GetNoiseSampAbsSum()const{return fNoiseSampAbsSum;}
 
 
     void CalcTimeCharge();
@@ -74,6 +81,13 @@ class VPMTChannel:public VSamplingChannel{
     double fAllSampMin;
     double fAllSampMax;
     double fAllSampAbsSum;
+
+    double fNoiseSampMean;
+    double fNoiseSampRMS;
+    double fNoiseSampMin;
+    double fNoiseSampMax;
+    double fNoiseSampAbsSum;
+
     double fTimeMeanAbsLowPass;
     double fTimeMeanLowPass;
     double fTimeMeanAbs;
@@ -105,6 +119,8 @@ class VPMTChannel:public VSamplingChannel{
     unsigned int fPedestalRangeEnd   ;
     unsigned int fOneParticleRangeBegin ;
     unsigned int fOneParticleRangeEnd   ;
+    unsigned int fTwoParticleRangeBegin ;
+    unsigned int fTwoParticleRangeEnd   ;
     double fFireThreshold;
 
     //std::pair<unsigned,unsigned> fSignalRange;

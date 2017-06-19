@@ -3,6 +3,10 @@
 #include<set> //std::multiset
 #include<cmath>
 #include<iostream>
+
+#include<gsl/gsl_fft_halfcomplex_float.h>
+#include<gsl/gsl_fft_real_float.h>
+
   void
 VPMTChannel::CalcPedestal()
 {
@@ -35,6 +39,10 @@ VPMTChannel::CalcTimeCharge()
   fTimeMean=0;
   fTimeMean2=0;
   fTimeMeanAbs=0;
+  fPhELowPass        =0;
+  fPhEAbsLowPass     =0;
+  fTimeMeanLowPass   =0;
+  fTimeMeanAbsLowPass=0;
   for(unsigned val_i=fNoiseRangeBegin;val_i<fNoiseRangeEnd;++val_i){
     fPhENoise+=GetValT0Ped(val_i);
     fPhENoiseAbs+=-std::abs(GetValT0Ped(val_i));
@@ -47,6 +55,10 @@ VPMTChannel::CalcTimeCharge()
     fTimeMean +=val_i*normcor_sample;
     fTimeMean2+=val_i*normcor_sample*normcor_sample;
     fTimeMeanAbs+=val_i*(-std::abs(normcor_sample));
+    fPhELowPass        +=(                GetValT0PedLowPass(val_i));
+    fPhEAbsLowPass     +=(      -std::abs(GetValT0PedLowPass(val_i)));
+    fTimeMeanLowPass   +=val_i*(          GetValT0PedLowPass(val_i));
+    fTimeMeanAbsLowPass+=val_i*(-std::abs(GetValT0PedLowPass(val_i)));
     if(fValMax>normcor_sample){
       fValMax=normcor_sample;
       fTimeMaxVal=val_i;
@@ -55,12 +67,16 @@ VPMTChannel::CalcTimeCharge()
   fTimeMean /=fPhE ;
   fTimeMean2/=fPhE2;
   fTimeMeanAbs/=fPhEAbs;
-
-  fPhE*=-41.6/fGain;
-  fPhEAbs*=-41.6/fGain;
-  fPhENoise*=-41.6/fGain;
-  fPhENoiseAbs*=-41.6/fGain;
-  fFired=fPhE>15;
+  fTimeMeanLowPass   /=fPhELowPass   ;
+  fTimeMeanAbsLowPass/=fPhEAbsLowPass;
+  // fGain*1e5
+  fPhE        *=-250/fGain;//-41.6/fGain;
+  fPhEAbs     *=-250/fGain;//-41.6/fGain;
+  fPhENoise   *=-250/fGain;//-41.6/fGain;
+  fPhENoiseAbs*=-250/fGain;//-41.6/fGain;
+  fPhELowPass   *=-250/fGain;//-41.6/fGain;
+  fPhEAbsLowPass*=-250/fGain;//-41.6/fGain;
+  //fFired=fPhE>15;
 
   double y20=fValMax*.2;
   double y50=fValMax*.5;
@@ -93,12 +109,45 @@ VPMTChannel::CalcTimeCharge()
 }
 
 
+  void
+VPMTChannel::FFTLowPassGSL(double nFreqToWipe /**<0..NSamples/2*/)
+{
+  fValuesLowPass=fValues;
+  if(nFreqToWipe<0||nFreqToWipe>=fNSamples/2){
+    std::cerr
+      <<"nFreqToWipe="
+      <<nFreqToWipe
+      <<" is out of range [0.."
+      <<fNSamples/2
+      <<"). Will do nothing!"
+      <<std::endl;
+    return;
+  }
+  const double pi=acos(-1);
+
+  gsl_fft_real_float_radix2_transform(&fValuesLowPass[0],1,fNSamples);
+  for(int fk=512;fk>512-nFreqToWipe;--fk){ //freq to kill
+    fValuesLowPass[0]+=2*(
+        fValuesLowPass[fk]*sin(2*pi*fk)+
+        fValuesLowPass[fNSamples-fk]*(1-cos(-2*pi*fk))
+        );
+    fValuesLowPass[fk]=fValuesLowPass[fNSamples-fk]=0;
+  }
+  gsl_fft_halfcomplex_float_radix2_inverse(&fValuesLowPass[0],1,fNSamples);
+}
+
 
   void
-VPMTChannel::FFTLowPass(double nFreqToWipe /**<0..NSamples/2*/)
+VPMTChannel::FFTLowPassMy(double nFreqToWipe /**<0..NSamples/2*/)
 {
   if(nFreqToWipe<0||nFreqToWipe>=fNSamples/2){
-    std::cerr<<"nFreqToWipe="<<nFreqToWipe<<" is out of range [0.."<<fNSamples/2<<"). Will do nothing!"<<std::endl;
+    std::cerr
+      <<"nFreqToWipe="
+      <<nFreqToWipe
+      <<" is out of range [0.."
+      <<fNSamples/2
+      <<"). Will do nothing!"
+      <<std::endl;
     fValuesLowPass=fValues;
     return;
   }

@@ -25,6 +25,8 @@ class Histos{
     TH2F* hist2f_SignalStudyLowPass[fNChanMax];
     TH1F* hist1f_PhElectr[fNChanMax];
     TH1F* hist1f_PhElectrAbs[fNChanMax];
+    TH1F* hist1f_PhElectrAbsSinglePartBeam[fNChanMax];
+    TH1F* hist1f_PhElectrFFTAbsSinglePartBeam[fNChanMax];
     TH1F* hist1f_PhElectrEff[fNChanMax];
     TH1F* hist1f_PhElectrNoise[fNChanMax];
     TH1F* hist1f_PhElectrAbsEff[fNChanMax];
@@ -32,7 +34,10 @@ class Histos{
     TH1F* hist1f_PhElectrT0Fix[fNChanMax];
     TH1F* hist1f_MaxValueDistr[fNChanMax];
     TH2F* hist2f_PhElectrChCor[fNChanMax][fNChanMax];
-    TH2F* hist2f_PhElectrChCorT0Fix[fNChanMax][fNChanMax];
+    TH2F* hist2f_PhElectrChCorAbs[fNChanMax][fNChanMax];
+    TH2F* hist2f_PhElectrChCorAbsSinglePartBeam[fNChanMax][fNChanMax];
+    TH2F* hist2f_PhElectrChCorAbsSinglePartBeamVetoed[fNChanMax][fNChanMax];
+    TH2F* hist2f_PhElectrChCorFFTAbsSinglePartBeamVetoed[fNChanMax][fNChanMax];
 
     TH1F* hist1f_TrigJitter[fNTrigMax];
     TH2F* hist2f_TrigCum[fNTrigMax];
@@ -66,6 +71,7 @@ class Histos{
 
     TH1F* hist1f_MeanTimeDistribution[fNChanMax];
     TH2F* hist2f_MeanTimeDistribution_Charge[fNChanMax];
+    TH2F* hist2f_MeanTimeDistributionAbs_Charge[fNChanMax];
     TH1F* hist1f_MeanTimeChanDif[fNChanMax][fNChanMax];
     TH2F* hist2F_ChanneOccupancy;
     TH2F* hist2f_MeanTimeChanDif_Charge[fNChanMax][fNChanMax];
@@ -79,6 +85,8 @@ class Histos{
     TH2F* hist2f_TimeDiffMeanTime           [fNChanMax][fNChanMax];
     TH2F* hist2f_TimeDiffMeanTime2          [fNChanMax][fNChanMax];
     TH2F* hist2f_TimeDiffMeanTimeAbs        [fNChanMax][fNChanMax];
+    TH2F* hist2f_TimeDiffMeanTimeFFT        [fNChanMax][fNChanMax];
+    TH2F* hist2f_TimeDiffMeanTimeFFTAbs     [fNChanMax][fNChanMax];
 
 
 

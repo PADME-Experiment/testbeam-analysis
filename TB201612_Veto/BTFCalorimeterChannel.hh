@@ -4,12 +4,12 @@
 class BTFCalorimeterChannel:public VCalorimeterChannel{
   public:
     BTFCalorimeterChannel(){
-      fGain=1;
+      fGain=6.009615;
       fSignalRangeBegin  =430;
       fSignalRangeEnd    =600;
       fNoiseRangeEnd     =fNoiseRangeBegin+fSignalRangeEnd-fSignalRangeBegin;
-fOnePheRange={40,60};
-      fFired=false;
+      fOneParticleRangeBegin=50-12;
+      fOneParticleRangeEnd  =50+12;
     }
     void SetVoltage(unsigned v){
       switch (v){

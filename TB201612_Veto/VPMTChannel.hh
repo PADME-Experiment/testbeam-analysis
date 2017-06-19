@@ -5,23 +5,25 @@
 #include"VSamplingChannel.hh"
 class VPMTChannel:public VSamplingChannel{
   public:
-  VPMTChannel():
-  fSignalRangeBegin  (0),
-  fSignalRangeEnd    (0),
-  fNoiseRangeBegin   (50),
-  fNoiseRangeEnd     (0),
-  fPedestalRangeBegin(30),
-  fPedestalRangeEnd  (250) {}
+    VPMTChannel():
+      fGain              (1),
+      fSignalRangeBegin  (0),
+      fSignalRangeEnd    (0),
+      fNoiseRangeBegin   (50),
+      fNoiseRangeEnd     (51),
+      fPedestalRangeBegin(30),
+      fPedestalRangeEnd  (250) {}
     virtual ~VPMTChannel(){}
   public:
-    bool IsFired()const{return fFired;}
+    bool IsFired()const{return fPhEAbs>fFireThreshold;}
     void CalcPedestal();
 
     Short_t GetPedestal()const{return fPedestal;}
-    Short_t GetSampT0PedCor   (int t)const{t-=fT0;return t>=0&&t<fNSamples?fSamples[t]-fPedestal:0;}
+    //Short_t GetSampT0PedCor   (int t)const{t-=fT0;return t>=0&&t<fNSamples?fSamples[t]-fPedestal:0;}
     double  GetValT0Ped       (int t)const{t-=fT0;return t>=0&&t<fNSamples?fValues[t]:0;}
     double  GetVal            (int t)const{       return t>=0&&t<fNSamples?fValues[t]:0;}
     double  GetValT0PedLowPass(int t)const{t-=fT0;return t>=0&&t<int(fValuesLowPass.size())?fValuesLowPass[t]:0;}
+    //double  GetValT0PedCorLowPass(int t)const{t-=fT0;return t>=0&&t<int(fValuesLowPass.size())?fValuesLowPass[t]-fPedestal:0;}
     double  GetValLowPass     (int t)const{       return t>=0&&t<int(fValuesLowPass.size())?fValuesLowPass[t]:0;}
 
     double  GetTimeMeanAbs           ()const{return fTimeMeanAbs;}
@@ -32,7 +34,11 @@ class VPMTChannel:public VSamplingChannel{
     double  GetTime2080LeadZeroCross ()const{return fTime2080LeadZeroCross;}
     double  GetTime2080LeadMid       ()const{return fTime2080LeadMid;}
     double  GetTimeHalfMax           ()const{return fTimeHalfMax;}
-    bool    HasOnePhEExact           ()const{return fPhEAbs>fOnePheRange.first&&fPhEAbs<fOnePheRange.second;}
+    double  GetTimeMeanAbsLowPass()const{return fTimeMeanAbsLowPass;}
+    double  GetTimeMeanLowPass   ()const{return fTimeMeanLowPass;   }
+    double  GetPhELowPass        ()const{return fPhELowPass;        }
+    double  GetPhEAbsLowPass     ()const{return fPhEAbsLowPass;     }
+    bool    IsSinglePartBeam         ()const{return fOneParticleRangeBegin<fPhEAbs&&fPhEAbs<fOneParticleRangeEnd;}
 
     double GetPhE        ()const{return fPhE;}
     double GetPhEAbs     ()const{return fPhEAbs;}
@@ -47,8 +53,17 @@ class VPMTChannel:public VSamplingChannel{
     //void FFTLowPass(){
     //  FFTLowPass(4);
     //}
-    void FFTLowPass(double nFreqToWipe /**<0..NSamples/2*/);
+    void FFTLowPass(double nFreqToWipe /**<0..NSamples/2*/){
+      return FFTLowPassGSL(nFreqToWipe);
+      //return FFTLowPassMy(nFreqToWipe);
+    }
   protected:
+
+    void FFTLowPassGSL(double);
+    void FFTLowPassMy (double);
+  protected:
+    double fTimeMeanAbsLowPass;
+    double fTimeMeanLowPass;
     double fTimeMeanAbs;
     double fTimeMean2;
     double fTimeMean;
@@ -60,6 +75,8 @@ class VPMTChannel:public VSamplingChannel{
 
     double fPhE,fPhE2;
     double fPhEAbs;
+    double fPhELowPass;
+    double fPhEAbsLowPass;
     double fPhENoise;
     double fPhENoiseAbs;
     double fValMax;
@@ -74,11 +91,13 @@ class VPMTChannel:public VSamplingChannel{
     unsigned int fNoiseRangeEnd      ;
     unsigned int fPedestalRangeBegin ;
     unsigned int fPedestalRangeEnd   ;
+    unsigned int fOneParticleRangeBegin ;
+    unsigned int fOneParticleRangeEnd   ;
+    double fFireThreshold;
 
-    std::pair<unsigned,unsigned> fSignalRange;
-    std::pair<unsigned,unsigned> fNoiseRange;
-    std::pair<unsigned,unsigned> fPedestalRange;
-    bool fFired;
-    std::pair<double,double> fOnePheRange;
+    //std::pair<unsigned,unsigned> fSignalRange;
+    //std::pair<unsigned,unsigned> fNoiseRange;
+    //std::pair<unsigned,unsigned> fPedestalRange;
+    //std::pair<double,double> fOnePheRange;
 };
 #endif

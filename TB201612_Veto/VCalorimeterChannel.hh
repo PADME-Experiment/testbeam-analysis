@@ -1,6 +1,7 @@
 #ifndef _VCalorimeterChannel_hh_
 #define _VCalorimeterChannel_hh_
 #include"VPMTChannel.hh"
+#include<cmath>
 class VCalorimeterChannel:public VPMTChannel{
   public:
     virtual~VCalorimeterChannel(){}
@@ -12,8 +13,10 @@ class VCalorimeterChannel:public VPMTChannel{
       //fFired=false;
     }
     //int GetNParticles(){return fNParticles;}
-    virtual void SetVoltage(unsigned i){fGain=i;}
+    int GetNPart(){return round((fPhEAbs-fOfs)/fMult);}
   protected:
+    double fMult;
+    double fOfs;
     //int fNParticles;
 };
 #endif

@@ -5,10 +5,9 @@ class TerminatedChannel:public VPMTChannel{
   public:
     TerminatedChannel(){
       fType="TerminatedChannel";
-      fSignalRange={400,550}; fNoiseRange={25,175};
-      fPedestalRange={1,180};
-      fOnePheRange={150,300};
-      fFired=false;
+      fSignalRangeBegin  =330;
+      fSignalRangeEnd    =420;
+      fNoiseRangeEnd     =fNoiseRangeBegin+fSignalRangeEnd-fSignalRangeBegin;
     }
 };
 #endif

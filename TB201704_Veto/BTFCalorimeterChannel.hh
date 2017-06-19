@@ -18,8 +18,11 @@ class BTFCalorimeterChannel:public VCalorimeterChannel{
       //fSignalRangeBegin  =430;
       //fSignalRangeEnd    =600;
       //fNoiseRangeEnd     =fNoiseRangeBegin+fSignalRangeEnd-fSignalRangeBegin;
-      fOneParticleRangeBegin=50-12;
-      fOneParticleRangeEnd  =50+12;
+      fOneParticleRangeBegin=62;//50-12;
+      fOneParticleRangeEnd  =115;//50+12;
+      fTwoParticleRangeBegin=180;
+      fTwoParticleRangeEnd  =250;
+      fFireThreshold=32;
     }
     void SetVoltage(unsigned v){
       switch (v){

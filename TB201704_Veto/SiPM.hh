@@ -5,8 +5,8 @@ class SiPM:public VPMTChannel{
   public:
     SiPM(){
       fType="SiPM";
-      fGain=8;//11.6; //E5
-      fFireThreshold=12;//7;
+      fGain=25;//11.6; //E5
+      fFireThreshold=30;//7;
       fSignalRangeBegin  =450;
       fSignalRangeEnd    =800;
       fNoiseRangeBegin=50;

@@ -1,7 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
 #include <vector>
+#include <sys/stat.h>
 
 #include "TFile.h"
 #include "TTree.h"
@@ -11,6 +13,8 @@
 #include "TMath.h"
 #include "TRawEvent.hh"
 #include "Histo.hh"
+#include "TObjArray.h"
+#include "TChain.h"
 
 Double_t Xcry[TADCBOARD_NCHANNELS];
 Double_t Ycry[TADCBOARD_NCHANNELS];
@@ -19,7 +23,10 @@ Double_t Cij[TADCBOARD_NCHANNELS];
 
 const int nSamples = 1024;
 const Int_t NAvg=80;
-const Double_t QZSCut=10.;
+// if Use_mean100=true the mean of the first NAvg samples 
+// will be used to evaluate the charge
+const Bool_t Use_mean100 = true;
+const Double_t QZSCut=5.;
 const Int_t IsRandCal=0.;
 const Bool_t OnlyCentrals=false;
 const Bool_t IsCalibrated=true;
@@ -27,10 +34,20 @@ const Double_t IsSaturatedValue = 30.;
 
 struct Eve{
   Int_t NTNevent;
+  Int_t RunNumber;
   Int_t NTNCry;
   Double_t NTQCh[25];
   Double_t NTQtot;
+  Double_t NTQtotCal;
   Double_t NTPedCh[25];
+  Double_t NTMeanCh[25];
+  Double_t NTRMSCh[25];
+  Double_t NTRMS100Ch[25];
+  Double_t Xcluster;
+  Double_t Ycluster;
+  Bool_t IsPositron;
+  Bool_t IsElectron;
+  Bool_t IsSaturated;
 };
 
 int IsEveGood(Double_t * QCh){
@@ -40,29 +57,26 @@ int IsEveGood(Double_t * QCh){
   return 1;
 }
 
-void FillHisto(std::string name,std::string outname, int nevents){
-  Xcry[ 0]=-2.; Xcry[ 1]=-1.; Xcry[ 2]= 0.; Xcry[ 3]= 1.; Xcry[ 4]= 2.;
-  Ycry[ 0]=-2.; Ycry[ 1]=-2.; Ycry[ 2]=-2.; Ycry[ 3]=-2.; Ycry[ 4]=-2.;
-  Xcry[ 5]=-2.; Xcry[ 6]=-1.; Xcry[ 7]= 0.; Xcry[ 8]= 1.; Xcry[ 9]= 2.;
-  Ycry[ 5]=-1.; Ycry[ 6]=-1.; Ycry[ 7]=-1.; Ycry[ 8]=-1.; Ycry[ 9]=-1.;
-  Xcry[10]=-2.; Xcry[11]=-1.; Xcry[12]= 0.; Xcry[13]= 1.; Xcry[14]= 2.;
-  Ycry[10]= 0.; Ycry[11]= 0.; Ycry[12]= 0.; Ycry[13]= 0.; Ycry[14]= 0.;
-  Xcry[15]=-2.; Xcry[16]=-1.; Xcry[17]= 0.; Xcry[18]= 1.; Xcry[19]= 2.;
-  Ycry[15]= 1.; Ycry[16]= 1.; Ycry[17]= 1.; Ycry[18]= 1.; Ycry[19]= 1.; 
-  Xcry[20]=-2.; Xcry[21]=-1.; Xcry[22]= 0.; Xcry[23]= 1.; Xcry[24]= 2.;
-  Ycry[20]= 2.; Ycry[21]= 2.; Ycry[22]= 2.; Ycry[23]= 2.; Ycry[24]= 2.;
+//void FillHisto(std::string name,std::string outname, int nevents){
+void FillHisto(TChain* Chain, std::string outname, Long64_t nevents){
+  //Fill Crystals position MAP
+  // 3 crystals per row
+  //for(Int_t xx=0;xx<25;xx++) Xcry[xx]= 2.-(xx%3)*2.;
+  //for(Int_t yy=0;yy<25;yy++) Ycry[yy]=-4.+(yy/3)*2.;
+  // 5x5 matrix
+  for(Int_t xx=0;xx<25;xx++) Xcry[xx]= 4.-(xx%5)*2.;
+  for(Int_t yy=0;yy<25;yy++) Ycry[yy]=-4.+(yy/5)*2.;
+
+  for(Int_t yy=0;yy<25;yy++) std::cout<<"Channel "<<yy<<" XCry "<<Xcry[yy]<<" YCry "<<Ycry[yy]<<std::endl;
 // July values
-  PedCh[ 0] =-12.5; PedCh[ 1] =-18.5; PedCh[ 2] = -16.5; PedCh[ 3] = -18.5; PedCh[ 4] = -16.5;
-  PedCh[ 5] =-17.5; PedCh[ 6] =-9.5;  PedCh[ 7] = -17.5; PedCh[ 8] = -14.5; PedCh[ 9] = -14.5;
-  PedCh[10] =-12.5; PedCh[11] =-14.5; PedCh[12] = -11.5; PedCh[13] =  -5.5; PedCh[14] = -9.5;
-  PedCh[15] =-11.5; PedCh[16] =-5.5;  PedCh[17] = -12.5; PedCh[18] = -13.5; PedCh[19] = -13.5;
-  PedCh[20] =-12.5; PedCh[21] =-3.5;  PedCh[22] = -13.5; PedCh[23] = -12.5; PedCh[24] = -1.5;
-//Novembre
-//  PedCh[ 0] =-9.5;  PedCh[ 1] =-16.; PedCh[ 2] = -14.0; PedCh[ 3] = -6.0; PedCh[ 4] = -14.;
-//  PedCh[ 5] =-15.;  PedCh[ 6] =-7.;  PedCh[ 7] = -15.; PedCh[ 8] = -12.; PedCh[ 9] = -12.;
-//  PedCh[10] =-10.; PedCh[11] =-13.; PedCh[12] = -11.; PedCh[13] =  -3.; PedCh[14] = -7.;
-//  PedCh[15] =-9.; PedCh[16] =-3.;  PedCh[17] = -11.; PedCh[18] = -11.; PedCh[19] = -11.;
-//  PedCh[20] =-10.; PedCh[21] =-2.;  PedCh[22] = -11.; PedCh[23] = -10; PedCh[24] = -1.;
+//  PedCh[ 0] = 3770; PedCh[ 1] =3835; PedCh[2]=3792; PedCh[3] = 3793; PedCh[ 4] = 3764;
+//  PedCh[ 5] = 3801; PedCh[ 6] =3791; PedCh[7]=3766; PedCh[8] = 3780; PedCh[ 9] = 3770;
+//  PedCh[10] = 3810; PedCh[11] =3809; 
+// Double values
+  PedCh[ 0] = 3769.59; PedCh[ 1] =3834.69; PedCh[2]=3791.53; PedCh[3] = 3792.51; PedCh[ 4] = 3764.45;
+  PedCh[ 5] = 3801.51; PedCh[ 6] =3790.81; PedCh[7]=3766.48; PedCh[8] = 3779.93; PedCh[ 9] = 3770.16;
+  PedCh[10] = 3809.6; PedCh[11]  =3808.6; 
+
   
   if(IsRandCal==1){
     TRandom *rand       = new TRandom();
@@ -85,17 +99,37 @@ void FillHisto(std::string name,std::string outname, int nevents){
     Cij[18]=1;
   }
   else if(IsCalibrated){  //Include Cosmic ray calibration constants for the central 9.
-    //printf("\n\n === In the total charge histogram ONLY the 9 central crystals are considered === \n\n");
+    
     for(int kk=0;kk<32;kk++) Cij[kk]=1.;
-    Cij[6]=1.0274;
-    Cij[7]=1.0307;
-    Cij[8]=1.16;
-    Cij[11]=1.0015;
-    Cij[12]=1;
-    Cij[13]=0.817;
-    Cij[16]=1.096;
-    Cij[17]=1.618;
-    Cij[18]=1.0896;
+    /*
+    Cij[0] = 1.341;
+    Cij[1] = 1.135;
+    Cij[2] = 1.274;
+    Cij[3] = 1.0031;
+    Cij[4] = 1;
+    Cij[5] = 1.324;
+    Cij[6] = 1.444;
+    Cij[7] = 0.911;
+    Cij[8] = 0.962;
+    Cij[9] = 1.740;
+    Cij[10] = 0.650;
+    Cij[11] = 0.823;
+    */
+    Cij[14] = 1.341;
+    Cij[16] = 1.135;
+    Cij[11] = 1.274;
+    Cij[18] = 1.0031;
+    Cij[3] = 1;
+    Cij[17] = 1.324;
+    Cij[8] = 1.444;
+    Cij[13] = 0.911;
+    Cij[7] = 0.962;
+    Cij[12] = 1.740;
+    Cij[6] = 0.650;
+    Cij[2] = 0.823;
+
+
+    printf("\n\n === Using crystal by Crystal calibration constants === \n\n");
   }
   else{
     for(Int_t ij=0;ij<32;ij++) Cij[ij]=1.;
@@ -107,60 +141,80 @@ void FillHisto(std::string name,std::string outname, int nevents){
   printf("new TFile\n");
   TFile *fileNTU  = new TFile("ntu.root", "RECREATE");
   printf("new TTree\n");
-  TTree *tree     = new TTree("NTU","Event3");
-  tree->Branch("Nevent",&(Event.NTNevent),"Nevent/I");
-  tree->Branch("NCry",&(Event.NTNCry),"NCry/I");
-  tree->Branch("Qtot",&(Event.NTQtot),"Qtot/D");
+  TTree *tree = new TTree("NTU","Event3");
   tree->Branch("QCh",Event.NTQCh,"QCh[25]/D");
   tree->Branch("PedCh",Event.NTPedCh,"PedCh[25]/D");
-
+  tree->Branch("RMS100Ch",Event.NTRMS100Ch,"RMS100Ch[25]/D");
+  tree->Branch("MeanCh",Event.NTMeanCh,"MeanCh[25]/D");
+  tree->Branch("RMSCh",Event.NTRMSCh,"RMSCh[25]/D");
+  tree->Branch("Qtot",&(Event.NTQtot),"Qtot/D");
+  tree->Branch("QtotCal",&(Event.NTQtotCal),"QtotCal/D");
+  tree->Branch("Xcluster",&(Event.Xcluster),"Xcluster/D");
+  tree->Branch("Ycluster",&(Event.Ycluster),"Ycluster/D");
+  tree->Branch("Run",&(Event.RunNumber),"Run/I");
+  tree->Branch("Nevent",&(Event.NTNevent),"Nevent/I");
+  tree->Branch("NCry",&(Event.NTNCry),"NCry/I");
+  tree->Branch("IsPositron",&Event.IsPositron,"IsPositron/O");
+  tree->Branch("IsElectron",&Event.IsElectron,"IsElectron/O");
+  tree->Branch("IsSaturated",&(Event.IsSaturated),"ISSaturated/O");
   printf("new TFile\n");
-  TFile* fRawEv = new TFile(name.c_str());
+
+  //TFile* fRawEv = new TFile(name.c_str());//
   printf("Get\n");
-  TTree* tRawEv = (TTree*)fRawEv->Get("RawEvents");
+  //TTree* tRawEv = (TTree*)fRawEv->Get("RawEvents");//
   printf("GetBranch\n");
-  TBranch* bRawEv = tRawEv->GetBranch("RawEvent");
+  //TBranch* bRawEv = tRawEv->GetBranch("RawEvent");//
+  //TBranch* bRawEv = Chain->GetBranch("RawEvent");//
   printf("TRawEvent\n");
   TRawEvent* rawEv = new TRawEvent();
   //  TRandom 
   printf("SetAddress\n");
-  bRawEv->SetAddress(&rawEv);
-  Int_t GoToEnd=0;
+  //bRawEv->SetAddress(&rawEv);
+  Chain->SetBranchAddress("RawEvent",&rawEv);
+
+  //Int_t GoToEnd  = 0;
   Int_t NMaxSamp = 1024;
   Double_t SampInd[1024];
   for(int ll=0;ll<NMaxSamp;ll++) SampInd[ll]=ll*1.;
 
-  UInt_t nevt = tRawEv->GetEntries();
-  printf("TTree RawEvents contains %d events\n",nevt);
   // Set number of events to read
+  //UInt_t nevt = tRawEv->GetEntries();//
+  Long64_t nevt = Chain->GetEntries();//
+  Chain->SetEstimate(nevt);
+  std::cout<<"TTree RawEvents contains "<<nevt<<" events\n";
   UInt_t ntoread = nevt;
   Double_t Sam[1024];
   Double_t SamRec[1024];
   Double_t TTrig[4];
   if (nevents && nevents<nevt) ntoread = nevents;
+  std::cout<<"Reading the first "<<ntoread<<" events\n";
 
-  printf("Reading the first %d events\n",ntoread);
-
-  //  ntoread = 1500.;
   Double_t mean100[32]={0.};
   Double_t rms100[32]={0.};
 
-  for(Int_t iev=0;iev<ntoread;iev++){
+  // loop over events
+  for(Long64_t iev=0;iev<ntoread;iev++){
     // Read event
     Event.NTNevent=iev;
-    // B1->Fill();
+    if(iev%1000==0) std::cout<<"Reading event "<<iev<<std::endl;
+    //bRawEv->GetEntry(iev);
+    Chain->GetEntry(iev);
 
-    if(iev%1000==0) printf("Reading event %d\n",iev);
-    bRawEv->GetEntry(iev);
-    // Show event header
     UChar_t nBoards = rawEv->GetNADCBoards();
+    if(iev==0) printf("Number of boards: %d\n",(int)nBoards);
+
+    UInt_t runnumber = rawEv->GetRunNumber();
+    Event.RunNumber = (int)runnumber;
+
     // Loop over boards
     for(UChar_t b=0;b<nBoards;b++){
+
       // Show board info
       TADCBoard* adcB = rawEv->ADCBoard(b);
       UChar_t nTrg = adcB->GetNADCTriggers();
       UChar_t nChn = adcB->GetNADCChannels();
-      if(iev==1) printf("Ntrg Nchn %d %d\n",nTrg,nChn);
+      if(iev==0) printf("connected Ntrg %d Nchn %d\n",nTrg,nChn);
+
       // Loop over triggers
       Int_t     MinInd;
       Double_t SamDiffTr[1024];
@@ -183,8 +237,8 @@ void FillHisto(std::string name,std::string outname, int nevents){
 
 //	Int_t     MinInd  =TMath::LocMin(800,&SamDiffTr[0]);
 	Double_t  MinTrig =TMath::MinElement(400,&SamRec[0]);
-	Double_t  TrigLowThr= MinTrig*0.1;
-	Double_t  TriHighThr= MinTrig*0.9;
+	//Double_t  TrigLowThr= MinTrig*0.1;
+	//Double_t  TriHighThr= MinTrig*0.9;
 	Double_t  Trig05    = MinTrig*0.5;
 	Double_t  Ind05     = 0;
 	// std::cout<<"Trig05 "<<Trig05<<"Min Trig "<<MinTrig<<std::endl;
@@ -211,7 +265,7 @@ void FillHisto(std::string name,std::string outname, int nevents){
 	//	Double_t y[10]={0,1};
 	Double_t w[10];
 
-	Int_t npt=2;
+	//Int_t npt=2;
 	for(int i=Ind05-2;i<=Ind05+2;i++){
 	  w[i]=y[i]-Trig05;
 	  w[i]=1/sqrt(w[i]*w[i]*w[i]);
@@ -263,29 +317,74 @@ void FillHisto(std::string name,std::string outname, int nevents){
 	TADCChannel* chn = adcB->ADCChannel(c);
 	UChar_t ch = chn->GetChannelNumber();
 	//	printf("\t\tChan %u Chn# %u\n",c,chn->GetChannelNumber());
-	//	Double_t SumSam=0.;
-
-       	for(UShort_t s=0;s<NAvg;s++){
+       	for(UShort_t s=0;s<chn->GetNSamples();s++){
 	  Sam[s] = (Double_t) chn->GetSample(s);
 	}
+
+	if(ch >= 25){
+
+	  // ch 29: positron NIM
+	  if(ch == 29){
+	    if(TMath::Mean(50,&Sam[930]) < 2048){
+	      Event.IsPositron = true;
+	    } else {
+	      Event.IsPositron = false;
+	    }
+	}
+	  // ch 30: electron NIM
+	  if(ch == 30){
+	    if(TMath::Mean(50,&Sam[930]) < 2048){
+	      Event.IsElectron = true;
+	    } else {
+	      Event.IsElectron = false;
+	    }
+	  }
+
+	  //if(!Event.IsElectron) printf("IsPositron %d, IsElectron %d\n",(int)Event.IsPositron,(int)Event.IsElectron);
+	  continue;
+	}
+
+
+	mean100[ch] = TMath::Mean(NAvg,&Sam[0]); 
 	rms100[ch]  = TMath::RMS(NAvg,&Sam[0]);
 	//std::cout<<"rms["<<(int)ch<<"]="<<rms100[ch]<<std::endl;
-
+	//	if(PedIsGood==-1) std::cout<<(Int_t)ch<<" QCh "<<QCh[ch]<<std::endl;
+	Double_t  mean    = TMath::Mean(nSamples,&Sam[0]);
+	Double_t  rms     = TMath::RMS(nSamples,&Sam[0]);
+	//Double_t  meanDif = TMath::Mean(800,&SamDiffCh[100]);
+	//Double_t  RMSDif  = TMath::RMS(800,&SamDiffCh[100]);
+	Int_t     MinInd  = TMath::LocMin(300,&SamDiffCh[100]);
+	//Double_t  MinDiff = TMath::MinElement(300,&SamDiffCh[100]); 
 	//update pedestal otherwise keep the last
-	if(rms100[ch]<7. || iev==0)  mean100[ch] = TMath::Mean(NAvg,&Sam[0]); 
+	//	if(rms100[ch]<7. || iev==0)  mean100[ch] = TMath::Mean(NAvg,&Sam[0]); 
+	//	if( abs(mean-mean100[ch]) <3. )  mean100[ch] = mean;
+	//	std::cout<<(Int_t)ch<<" rms Ped "<<rms100[ch]<<" "<<rms100[ch]-rms<<std::endl;
 	if(rms100[ch]>7.)  {
 	  PedIsGood=-1;
-	  //	  std::cout<<(Int_t)ch<<" rms Ped "<<rms100[ch]<<std::endl;
 	}	
-	
+	//	mean100[ch]=3766;
        	for(UShort_t s=0;s<chn->GetNSamples();s++){
-	  Sam[s]    = (Double_t) chn->GetSample(s);
-	  SamRec[s] = (Double_t) (chn->GetSample(s)-mean100[ch])/4096*1.; //in V
+	  //	  Sam[s]    = (Double_t) chn->GetSample(s);
+	  if(Use_mean100){
+	    SamRec[s] = (Double_t) (chn->GetSample(s)-mean100[ch])/4096*1.; //in V
+	  } else {
+	    SamRec[s] = (Double_t) (chn->GetSample(s)-PedCh[ch])/4096*1.; //in V
+	  }
+
+	  if((iev%10==0) && iev<4000){
+	    
+	    TH2D* histo2d = his->Get2DHisto(Form("SigCh%d",ch));
+	    histo2d->SetBinContent(s,iev/10,SamRec[s]);
+	  }
 
  	  //printf("%f ",Sam[s]);
 	  // Troppo stringente basta un punto sotto 30 ne servirebbero forse 10 per cambiare l'integrale
-	  if(Sam[s]<IsSaturatedValue) {
+	  if(Sam[s]<IsSaturatedValue
+	     && Sam[s+1]<IsSaturatedValue
+	     && Sam[s+2]<IsSaturatedValue
+	     && Sam[s+3]<IsSaturatedValue) {
 	    IsSaturated=true;
+
 	    //printf("Saturated ch %d: ev=%d x=%d, y=%f\n",(int)ch,iev,s,Sam[s]);
 	  }
 	  if(s>NAvg && s<1000.){
@@ -293,20 +392,21 @@ void FillHisto(std::string name,std::string outname, int nevents){
 	    if(s<1000) SamDiffCh[s]=Sam[s]-Sam[s-6];//+mean100[ch];
 	  }
 	}
-	//	if(PedIsGood==-1) std::cout<<(Int_t)ch<<" QCh "<<QCh[ch]<<std::endl;
-	Double_t  mean    = TMath::Mean(nSamples,&Sam[0]);
-	Double_t  rms     = TMath::RMS(nSamples,&Sam[0]);
-	Double_t  meanDif = TMath::Mean(800,&SamDiffCh[100]);
-	Double_t  RMSDif  = TMath::RMS(800,&SamDiffCh[100]);
-	Int_t     MinInd  = TMath::LocMin(300,&SamDiffCh[100]);
-	Double_t  MinDiff = TMath::MinElement(300,&SamDiffCh[100]); 
-	TCh[ch] = MinInd;
-	QCh[ch]-= PedCh[ch];
-	Event.NTQCh[ch]   = QCh[ch];
-	Event.NTPedCh[ch] = mean100[ch];
 
-	if (ch<25) {
+	TCh[ch] = MinInd;
+	//	QCh[ch]-= PedCh[ch];
+	Event.NTQCh[ch]    = QCh[ch];
+	Event.NTPedCh[ch]  = mean100[ch];
+	Event.NTMeanCh[ch] = mean;
+	Event.NTRMSCh[ch]  = rms;	
+	Event.NTRMS100Ch[ch]  = rms100[ch];
+	Event.IsSaturated = IsSaturated;
+
+
+
+	if (ch<nChn) {
 	  if(b==0 && PedIsGood==1) his->Fill1D(Form("hPedCalo%d",ch),mean100[ch]);
+	  if(b==0 && PedIsGood==1 && rms<4.5 && abs(rms-rms100[ch])<1.8) his->Fill1D(Form("hPedMean%d",ch),mean);
 	  if(b==0 && PedIsGood==1) his->Fill1D(Form("hQCh%d",ch),QCh[ch]);
 	  if(b==0 && QCh[ch]>50.)  his->Fill1D(Form("hTCh%d",ch),TCh[ch]);
 	  if(b==0 && QCh[12]>500.) his->Fill1D("hTevRes",TCh[12]-TTrig[1]);
@@ -316,12 +416,13 @@ void FillHisto(std::string name,std::string outname, int nevents){
 	//	if(b==0) his->FillGraph("Calo",ch,chn->GetNSamples(),SampInd,Sam);
 //	if(b==0) his->FillGraph("CaloReco",ch,chn->GetNSamples(),SampInd,SamRec);
 
-	if(ch!=10 && QCh[ch]>0.) Qtot[b]   += QCh[ch];//
-	if(ch!=10 && QCh[ch]>0.){ 
-	  QtotCal[b]+= QCh[ch]/Cij[ch];
+	if(1/*QCh[ch]>0.*/) Qtot[b]   += QCh[ch];//
+	if(1/*QCh[ch]>0.*/){ 
 	  //	if(QCh[ch]>QZSCut && ch!=10) { //perform zero suppression
 	  if(QCh[ch]>QZSCut) { //perform zero suppression
-	    QtotZS[b]+=QCh[ch]/Cij[ch];
+	    //	    QtotZS[b]+=QCh[ch]/Cij[ch];
+	    QtotZS[b]+=QCh[ch];
+	    QtotCal[b]+= QCh[ch]/Cij[ch];
 	    NCry++;
 	  }
 	  //	if(QCh[ch]>300 && ch!=10) { //perform zero suppression
@@ -335,29 +436,37 @@ void FillHisto(std::string name,std::string outname, int nevents){
 	  if(QCh[ch]>QZSCut)  YcryTotZS += Ycry[ch]*QCh[ch];
 	}
       }//end of loop on channels
-      //      if(iev%1000==0) his->DrawChannels(1,25);
+
+
+
       Event.NTQtot= Qtot[b];
+      Event.NTQtotCal= QtotCal[b];
       Event.NTNCry= NCry;
       TEv[b]=TTot[b]/NTCry;
       //      std::cout<<""<<std::endl;
-      EleX=XcryTot/Qtot[b]*2;
-      EleY=YcryTot/Qtot[b]*2;
+      EleX=XcryTot/Qtot[b];
+      EleY=YcryTot/Qtot[b];
+
+      Event.Xcluster = EleX;
+      Event.Ycluster = EleY;
+
       //      if(QCh[12]<0.){
-      for(UChar_t c=0;c<25;c++) his->Fill1D(Form("hQPedCalo%d",c),QCh[c]);
+      for(UChar_t c=0;c<nChn;c++) his->Fill1D(Form("hQPedCalo%d",c),QCh[c]);
       //	  if(b==0) his->Fill1D(Form("hQPedCaloProf%d",ch),iev,Qtot[b]);
       //      }
-      his->Fill2D("hECALPos",EleX,EleY);         
-      his->Fill2D("hECALPosZS",XcryTotZS/QtotZS[b]*2,YcryTotZS/QtotZS[b]*2);
+      if(Qtot[b]>300.) his->Fill2D("hECALPos",EleX,EleY);         
+      if(Qtot[b]>300.) his->Fill2D("hECALPosZS",XcryTotZS/QtotZS[b],YcryTotZS/QtotZS[b]);
       if(NCry<10) his->Fill2D("hECALPosZS1e",EleX,EleY);
+      his->Fill2D("hQtotVsNevt",iev,Qtot[b]);         
       his->Fill1D("hNCry",NCry);
       his->Fill1D("hNTCry",NTCry);
       // && sqrt(EleX*EleX+EleY*EleY)<0.4
 
       // FILLING FINAL HISTOGRAMS
-      IsSaturated=0; //M Raggi temporary
       if(b==0) his->Fill1D("hQTotNoCut",Qtot[b]);
       if(b==0 && Qtot[b]>-200. && NCry<4) his->Fill1D("hQTot2cry",Qtot[b]);
-      if(b==0 && Qtot[b]>-200. && sqrt(EleX*EleX+EleY*EleY)<0.7 && PedIsGood>0 && (!IsSaturated)) his->Fill1D("hQTot",Qtot[b]);
+      //      if(b==0 && Qtot[b]>-200. && sqrt(EleX*EleX+EleY*EleY)<0.7 && PedIsGood>0 && (!IsSaturated)) his->Fill1D("hQTot",Qtot[b]);
+      if(b==0 && Qtot[b]>-200. && PedIsGood>0 && (!IsSaturated)) his->Fill1D("hQTot",Qtot[b]);
       if(b==0 && Qtot[b]>-200. && sqrt(EleX*EleX+EleY*EleY)<0.7 && PedIsGood>0 && (!IsSaturated)) his->Fill1D("hQTotCal",QtotCal[b]);
       //      if(b==0 && QtotZS[b]>0.  && NCry>10 && sqrt(EleX*EleX+EleY*EleY)<0.7 && PedIsGood>0 && (!IsSaturated)) his->Fill1D("hQTotZS",QtotZS[b]);
       if(b==0 && QtotZS[b]>0. && NCry>3  && sqrt(EleX*EleX+EleY*EleY)<0.7 && PedIsGood>0 && (!IsSaturated)) his->Fill1D("hQTotZS",QtotZS[b]);
@@ -381,34 +490,54 @@ void FillHisto(std::string name,std::string outname, int nevents){
     // Clear event
     rawEv->Clear("C");
     tree->Fill();
-  }
+
+
+  }// end of loop over events
+
+
+
   fileNTU->cd();
   tree->Print();
   tree->Write();
   fileNTU->Close();
   delete rawEv;
-  delete bRawEv;
-  delete tRawEv;
-  fRawEv->Close();
-  delete fRawEv;
+  //delete bRawEv;
+  //delete tRawEv;//
+  //fRawEv->Close();//
+  //delete fRawEv;//
 }
+/*
+TString CheckProtocols(TString OldStr){
+  return OldStr;
+  }*/
+
 
 int main(int argc, char* argv[])
 {
-  int nevents=0;
+  Int_t nevents=0;
   int c;
+  TString OutputFileName("OutputFile.root");
+  TString InputListFileName("InputListFile.txt");
+  TString InputFileName("Inputfile.root");
   std::string infile = "rawdata.root";
   std::string outfile = "out.root";
+  int iFile = 0, NFiles = 100000;
+  struct stat filestat;
   int verbose = 0;
   Histo* his = Histo::GetInstance();
+
   // Parse options
-  while ((c = getopt (argc, argv, "i:o:n:v:h")) != -1) {
+  while ((c = getopt (argc, argv, "i:l:o:n:v:h")) != -1) {
     switch (c)
       {
       case 'i':
         infile = optarg;
         fprintf(stdout,"Set input data file to '%s'\n",infile.c_str());
+	InputFileName = TString(optarg);
         break;
+      case 'l':
+	InputListFileName = TString(optarg);
+	break;
       case 'o':
         outfile = optarg;
         fprintf(stdout,"Set output data file to '%s'\n",outfile.c_str());
@@ -463,53 +592,56 @@ int main(int argc, char* argv[])
         abort();
       }
   }
+  
 
-  //  TApplication theApp("App",&argc,argv);
-  //  printf("FillHisto\n");
-  FillHisto(infile.c_str(),outfile.c_str(),nevents);
-  // his->InitMonitor();
-  // his->DrawCalo(1,25);
+  TChain* chain = new TChain("RawEvents");
+
+  
+  TObjArray InputFileNameList;
+  if(stat(Form(InputListFileName.Data()), &filestat) == 0) { //-l option used
+    std::ifstream InputList(InputListFileName.Data());
+    while(InputFileName.ReadLine(InputList) && iFile < NFiles){
+      if(stat(Form(InputFileName.Data()), &filestat) == 0)
+	//InputFileNameList.Add(new TObjString(InputFileName.Data()));
+      chain->Add(InputFileName.Data());      
+      iFile++;
+    }
+  } else if(InputFileName.CompareTo("")) { //-i option used
+    if(stat(Form(InputFileName.Data()), &filestat) == 0)
+      //InputFileNameList.Add(new TObjString(InputFileName.Data()));
+    chain->Add(InputFileName.Data());      
+  }
+  
+  if(chain->GetEntries() == 0 /*InputFileNameList.GetEntries() == 0*/) {
+    perror(Form("No Input File"));
+    exit(1);
+  }
+  //TFile* OutputFile = TFile::Open(OutputFileName.Data(),"RECREATE");
+  /*  
+  for(Int_t jFile = 0; jFile < InputFileNameList.GetEntries(); jFile++){
+    chain->Add((((TObjString*)InputFileNameList.At(jFile))->GetString()));
+    //printf("adding %s",(((TObjString*)InputFileNameList.At(jFile))->GetString()));
+  }
+  */
+
+  chain->SetEstimate(chain->GetEntries());
+  /*  
+  TBranch* bRawEv = chain->GetBranch("RawEvent");
+  TRawEvent* rawEv = new TRawEvent();
+  chain->SetBranchAddress("RawEvent",&rawEv);
+  //bRawEv->SetAddress(&rawEv);
+  //bRawEv->GetEntry(99999);
+  //bRawEv->GetEntry(100002,1);
+  chain->GetEntry(100004);
+  UChar_t nBoards = rawEv->GetNADCBoards();
+  printf("Number of boards %d\n",nBoards);
+  */
+  if((nevents == 0) || (nevents > chain->GetEntries())) nevents = chain->GetEntries();
+  printf("nevents %d\n", nevents);
+  
+  FillHisto(chain,outfile.c_str(),nevents);
   his->WriteHisto();
-  //sleep(10);
-  //  theApp.Run();
+  
+  
   exit(0);
 }
-
-
-//void ECALAnal::AnalyzePosition()
-//{
-//
-//  // Map of crystal positions
-//  Double_t Xcry[TADCBOARD_NCHANNELS];
-//  Double_t Ycry[TADCBOARD_NCHANNELS];
-//  Xcry[ 5]= 4.; Xcry[ 6]= 2.; Xcry[ 7]= 0.; Xcry[ 8]=-2.;
-//  Ycry[ 5]=-2.; Ycry[ 6]=-2.; Ycry[ 7]=-2.; Ycry[ 8]=-2.;
-//  Xcry[10]= 4.; Xcry[11]= 2.; Xcry[12]= 0.; Xcry[13]=-2.;
-//  Ycry[10]= 0.; Ycry[11]= 0.; Ycry[12]= 0.; Ycry[13]= 0.;
-//  Xcry[15]= 4.; Xcry[16]= 2.; Xcry[17]= 0.; Xcry[18]=-2.;
-//  Ycry[15]= 2.; Ycry[16]= 2.; Ycry[17]= 2.; Ycry[18]= 2.;
-//
-//  // Loop over boards
-//  UChar_t nBoards = fRawEvent->GetNADCBoards();
-//  for(UChar_t b=0;b<nBoards;b++){
-//
-//    // Check if we are looking at the ECAL ADC board (board id 0) and we have some signal
-//    TADCBoard* adcB = fRawEvent->ADCBoard(b);
-//    UChar_t bid = adcB->GetBoardId();
-//    if (bid != 0 || fQTotal1[bid] <= 0.) continue;
-//
-//    //    printf("AnalPos - Board %d Charge %f\n",bid,fQTotal1[bid]);
-//
-//    // Get number of active channels in this board
-//    UChar_t nChn = adcB->GetNADCChannels();
-//
-//    Double_t XcryTot = 0.;
-//    Double_t YcryTot = 0.;
-//    for(Int_t c=0;c<nChn;c++){
-//      UChar_t cnr = adcB->ADCChannel(c)->GetChannelNumber();
-//      XcryTot += Xcry[cnr]*fQChannel[bid][cnr];
-//      YcryTot += Ycry[cnr]*fQChannel[bid][cnr];
-//    }
-//    fECALHisto->Fill2DHisto("ECALPos",XcryTot/fQTotal1[bid],YcryTot/fQTotal1[bid]);
-//  }
-//}

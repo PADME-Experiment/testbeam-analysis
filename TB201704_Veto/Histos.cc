@@ -188,36 +188,42 @@ Histos::CreateHistos()
       std::string lab=";ns;nPhe(13)/10";
 
       name ="TimeDiffMaxValue_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj)+lab;
-      tmptobj=hist2f_TimeDiffMaxValue  [ii][jj]       =new TH2F(name.c_str(),title.c_str(),320,-80-.25,80-.25,200,-20,500);
+      tmptobj=hist2f_TimeDiffMaxValue  [ii][jj]       =new TH2F(name.c_str(),title.c_str(),640,-80-.25,80-.25,350,-20,1000);
       fAllObj.emplace("TimeDiffMaxValue",tmptobj);
       name ="TimeDiffHalfMaxValue_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj)+lab;
-      tmptobj=hist2f_TimeDiffHalfMaxValue   [ii][jj]  =new TH2F(name.c_str(),title.c_str(),320,-80-.25,80-.25,200,-20,500);
+      tmptobj=hist2f_TimeDiffHalfMaxValue   [ii][jj]  =new TH2F(name.c_str(),title.c_str(),640,-80-.25,80-.25,350,-20,1000);
       fAllObj.emplace("TimeDiffHalfMaxValue",tmptobj);
       name ="TimeDiff2080LeadTrailCros_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj)+lab;
-      tmptobj=hist2f_TimeDiff2080LeadTrailCros[ii][jj]=new TH2F(name.c_str(),title.c_str(),320,-80-.25,80-.25,200,-20,500);
+      tmptobj=hist2f_TimeDiff2080LeadTrailCros[ii][jj]=new TH2F(name.c_str(),title.c_str(),640,-80-.25,80-.25,350,-20,1000);
       fAllObj.emplace("TimeDiff2080LeadTrailCros",tmptobj);
       name ="TimeDiff2080LeadZeroCros_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj)+lab;
-      tmptobj=hist2f_TimeDiff2080LeadZeroCros[ii][jj] =new TH2F(name.c_str(),title.c_str(),320,-80-.25,80-.25,200,-20,500);
+      tmptobj=hist2f_TimeDiff2080LeadZeroCros[ii][jj] =new TH2F(name.c_str(),title.c_str(),640,-80-.25,80-.25,350,-20,1000);
       fAllObj.emplace("TimeDiff2080LeadZeroCros",tmptobj);
       name ="TimeDiff2080Lead50_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj)+lab;
-      tmptobj=hist2f_TimeDiff2080Lead50   [ii][jj]    =new TH2F(name.c_str(),title.c_str(),320,-80-.25,80-.25,200,-20,500);
+      tmptobj=hist2f_TimeDiff2080Lead50   [ii][jj]    =new TH2F(name.c_str(),title.c_str(),640,-80-.25,80-.25,350,-20,1000);
       fAllObj.emplace("TimeDiff2080Lead50",tmptobj);
       name ="TimeDiffMeanTime_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj)+lab;
-      tmptobj=hist2f_TimeDiffMeanTime      [ii][jj]   =new TH2F(name.c_str(),title.c_str(),320,-80-.25,80-.25,200,-20,500);
+      tmptobj=hist2f_TimeDiffMeanTime      [ii][jj]   =new TH2F(name.c_str(),title.c_str(),640,-80-.25,80-.25,350,-20,1000);
       fAllObj.emplace("TimeDiffMeanTime",tmptobj);
       name ="TimeDiffMeanTime2_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj)+lab;
-      tmptobj=hist2f_TimeDiffMeanTime2     [ii][jj]   =new TH2F(name.c_str(),title.c_str(),320,-80-.25,80-.25,200,-20,500);
+      tmptobj=hist2f_TimeDiffMeanTime2     [ii][jj]   =new TH2F(name.c_str(),title.c_str(),640,-80-.25,80-.25,350,-20,1000);
       fAllObj.emplace("TimeDiffMeanTime2",tmptobj);
       name ="TimeDiffMeanTimeAbs_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj)+lab;
-      tmptobj=hist2f_TimeDiffMeanTimeAbs     [ii][jj]   =new TH2F(name.c_str(),title.c_str(),320,-80-.25,80-.25,200,-20,500);
+      tmptobj=hist2f_TimeDiffMeanTimeAbs     [ii][jj]   =new TH2F(name.c_str(),title.c_str(),640,-80-.25,80-.25,350,-20,1000);
       fAllObj.emplace("TimeDiffMeanTimeAbs",tmptobj);
 
       name ="TimeDiffMeanTimeFFT_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj)+lab;
-      tmptobj=hist2f_TimeDiffMeanTimeFFT     [ii][jj]   =new TH2F(name.c_str(),title.c_str(),320,-80-.25,80-.25,200,-20,500);
+      tmptobj=hist2f_TimeDiffMeanTimeFFT     [ii][jj]   =new TH2F(name.c_str(),title.c_str(),640,-80-.25,80-.25,350,-20,1000);
       fAllObj.emplace("TimeDiffMeanTimeFFT",tmptobj);
       name ="TimeDiffMeanTimeFFTAbs_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj)+lab;
-      tmptobj=hist2f_TimeDiffMeanTimeFFTAbs     [ii][jj]   =new TH2F(name.c_str(),title.c_str(),320,-80-.25,80-.25,200,-20,500);
+      tmptobj=hist2f_TimeDiffMeanTimeFFTAbs     [ii][jj]   =new TH2F(name.c_str(),title.c_str(),640,-80-.25,80-.25,350,-20,1000);
       fAllObj.emplace("TimeDiffMeanTimeFFTAbs",tmptobj);
+
+      name=         "TimeDiffIntegral_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj)+lab;
+      tmptobj=hist2f_TimeDiffIntegral[ii][jj]   =new TH2F(name.c_str(),title.c_str(),640,-80-.25,80-.25,350,-20,1000);
+      fAllObj.emplace("TimeDiffIntegral",tmptobj);
+
+
 
 
     }

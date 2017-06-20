@@ -115,6 +115,24 @@ VPMTChannel::CalcTimeCharge()
   fPhEAbsLowPass*=-250/fGain;//-41.6/fGain;
   //fFired=fPhE>15;
 
+
+  double summall=0;
+  double summtmp=0;
+  for(unsigned val_i=fSignalRangeBegin;val_i<fSignalRangeEnd;++val_i){
+    const double normcor_sample=GetValT0Ped(val_i);
+    summall+=normcor_sample;
+  }
+  for(unsigned val_i=fSignalRangeBegin;val_i<fSignalRangeEnd;++val_i){
+    const double normcor_sample=GetValT0Ped(val_i);
+    summtmp+=normcor_sample;
+    if(summtmp<=summall*.115){ // best results
+      fTimeIntegral=val_i;
+      break;
+    }
+  }
+
+
+
   double y20=fValMax*.2;
   double y50=fValMax*.5;
   double y80=fValMax*.8;

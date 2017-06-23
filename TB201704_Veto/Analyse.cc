@@ -311,18 +311,18 @@ Analyse::FillHistos()
       VPMTChannel&chii= *sigii_it->second;
       int ii=int(sigii_it->first);
       if(true
-          &&( // at least 3 of 4 scintillators are fired
+          &&( // at least 2 of 4 scintillators are fired
             (fSignalChannels[(Universe::eROCh) 4]->IsFired()?1:0)+
             (fSignalChannels[(Universe::eROCh) 5]->IsFired()?1:0)+
             (fSignalChannels[(Universe::eROCh) 6]->IsFired()?1:0)+
             (fSignalChannels[(Universe::eROCh) 7]->IsFired()?1:0)
-            )>3
+            )>2
           &&(
             (fSignalChannels[(Universe::eROCh)12]->IsFired()?1:0)+
             (fSignalChannels[(Universe::eROCh)13]->IsFired()?1:0)+
             (fSignalChannels[(Universe::eROCh)14]->IsFired()?1:0)+
             (fSignalChannels[(Universe::eROCh)15]->IsFired()?1:0)
-            )>3
+            )>2
         ){
         fHists.hist1f_PhElectrEff     [ii]->Fill(chii.     GetPhE());
         fHists.hist1f_PhElectrNoise   [ii]->Fill(chii.GetPhENoise());

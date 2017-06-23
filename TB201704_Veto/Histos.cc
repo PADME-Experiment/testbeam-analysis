@@ -69,14 +69,14 @@ Histos::CreateHistos()
     tmptobj=hist1f_PhElectrEff[ii]=new TH1F(name.c_str(),title.c_str(),512,-150,1400);
     fAllObj.emplace("PhElectrEff",tmptobj);
     name ="PhElectrNoise_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii); title=name+" "+uni.GetROName(ii);
-    tmptobj=hist1f_PhElectrNoise[ii]=new TH1F(name.c_str(),title.c_str(),512,-200,200);
+    tmptobj=hist1f_PhElectrNoise[ii]=new TH1F(name.c_str(),title.c_str(),512,-150,1400);
     fAllObj.emplace("PhElectrNoise",tmptobj);
 
     name ="PhElectrEffAbs_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii); title=name+" "+uni.GetROName(ii);
     tmptobj=hist1f_PhElectrAbsEff[ii]=new TH1F(name.c_str(),title.c_str(),512,-50,1400);
     fAllObj.emplace("PhElectrAbsEff",tmptobj);
     name ="PhElectrNoiseAbs_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii); title=name+" "+uni.GetROName(ii);
-    tmptobj=hist1f_PhElectrAbsNoise[ii]=new TH1F(name.c_str(),title.c_str(),512,-50,300);
+    tmptobj=hist1f_PhElectrAbsNoise[ii]=new TH1F(name.c_str(),title.c_str(),512,-50,1400);
     fAllObj.emplace("PhElectrAbsEff",tmptobj);
 
     name="PhElectrT0Fix_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii); title=name+" "+uni.GetROName(ii);

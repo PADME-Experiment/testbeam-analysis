@@ -14,7 +14,7 @@ set log y
 set grid
 set xti 10
 set title "Position determination based on collected charge (channel 11 best light output, light collection fibre+scintillator)"
-set yla "Collected charge [au]"
+set yla "Mean of collected charge distribution [au]"
 set xla "Beam position [mm]"
 
 p  [0:200] [50:600] \

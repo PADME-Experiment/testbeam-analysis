@@ -31,7 +31,7 @@ int Post_doublero(){
   //TFile out("out.root","recreate");
   for(auto fni=files.begin();fni!=files.end();++fni){
     auto fn=*fni;
-    TFile f((""+fn+"-tmp.root").c_str(),"READ");
+    TFile f((""+fn+".lst.root").c_str(),"READ");
     //ProcFile(f,out,fn);
     ProcFile(f,fn);
   }

@@ -133,9 +133,11 @@ VPMTChannel::CalcTimeCharge()
 
 
 
+  double y10=fValMax*.1;
   double y20=fValMax*.2;
   double y50=fValMax*.5;
   double y80=fValMax*.8;
+  double xl10=-999990;
   double xl20=-999990;
   double xl50=-999990;
   double xl80=-999990;
@@ -146,6 +148,7 @@ VPMTChannel::CalcTimeCharge()
 
   for(UShort_t val_i=fTimeMaxVal;val_i>=fSignalRangeBegin;--val_i){
     const double normcor_sample=GetValT0Ped(val_i);
+    if(normcor_sample<y10)xl10=val_i;
     if(normcor_sample<y20)xl20=val_i;
     if(normcor_sample<y50)xl50=val_i;
     if(normcor_sample<y80)xl80=val_i;
@@ -160,6 +163,8 @@ VPMTChannel::CalcTimeCharge()
   fTime2080LeadMid=(xl80-xl20)/2+xl20;
   fTime2080LeadZeroCross=-y20*(xl80-xl20)/(y80-y20)+xl20;
   fTimeHalfMax=xl50;
+  fTime01Max=xl10;
+  fTime02Max=xl20;
 
 }
 

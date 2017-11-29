@@ -151,6 +151,50 @@ p [0:200] for [k=0:4] "effinef" i k u (runN_pos($1)):($6>99.8?$6:0/0) w lp pt k+
 
 
 
+reset
+
+set o "effinef-paper.pdf"
+
+set y2tics (      \
+"1E-3  "   1e-3     , \
+"2E-3  "   2e-3     , \
+"5E-3  "   5e-3     , \
+"1E-2  "   1e-2     , \
+"2E-2  "   2e-2     , \
+"5E-2  "   5e-2     , \
+"1E-1  "   1e-1     , \
+"2E-1  "   2e-1     , \
+"5E-1  "   5e-1     , \
+"1E-0  "   1e-0     , \
+"2E-0  "   2e-0     , \
+"5E-0  "   5e-0     , \
+ )
+channelname(x)=(\
+x== 0||x==8?"Ch.8"      :\
+x== 1||x==9?"Ch.9"        :\
+x== 2||x==10?"Ch.10"      :\
+x== 3||(x*1)==11?"Ch.11"       :\
+"UNKNOWN")
+#set key horizontal outside  bottom left Right     width 0        samplen 1 spacing .8 box 
+#set key  outside  top    width 0     samplen 1 spacing .8 box  at graph .99, graph .99
+set key at  screen .99, screen .96 right Left samplen 1.5
+set term pdf size 4,3
+set grid;
+set grid y2tics;
+#set term pdf size 12,8;
+#set title "Efficincy / Noise at 10Phe threshold";
+set xla "Beam postition starting from SiPM[mm]";
+set yla "Efficincy [%]";
+set y2la "Noise [%]";
+#set y2ti mirror 0,.02,.3;
+set y2ra [.001:500];
+
+set log y2
+set yra [99.7:100.02]
+set yti 99.9,.02,100 nomirror;
+p [0:200] for [k=0:4] "effinef" i k u (runN_pos($1)):($6>99.8?$6:0/0) w lp pt k+1 lw 2 lc k+1 title channelname(k),\
+                     for [k=0:4] "effinef" i k u (runN_pos($1)):($7<3?$7:0/0) w lp lw 2 pt k+1 lc k+1 notit ax x1y2;
+
 
 
 

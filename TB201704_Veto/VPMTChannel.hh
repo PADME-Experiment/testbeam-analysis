@@ -35,14 +35,17 @@ class VPMTChannel:public VSamplingChannel{
     double  GetTime2080LeadZeroCross ()const{return fTime2080LeadZeroCross;}
     double  GetTime2080LeadMid       ()const{return fTime2080LeadMid;}
     double  GetTimeHalfMax           ()const{return fTimeHalfMax;}
+    double  GetTime01Max           ()const{return fTime01Max;}
+    double  GetTime02Max           ()const{return fTime02Max;}
+    //double  GetTimePol4    (double v)const{return 
 
     double  GetTimeIntegral      ()const{return fTimeIntegral;}
     double  GetTimeMeanAbsLowPass()const{return fTimeMeanAbsLowPass;}
     double  GetTimeMeanLowPass   ()const{return fTimeMeanLowPass;   }
     double  GetPhELowPass        ()const{return fPhELowPass;        }
     double  GetPhEAbsLowPass     ()const{return fPhEAbsLowPass;     }
-    bool    IsSinglePartBeam         ()const{return fOneParticleRangeBegin<fPhEAbs&&fPhEAbs<fOneParticleRangeEnd;}
-    bool    IsDoublePartBeam         ()const{return fTwoParticleRangeBegin<fPhEAbs&&fPhEAbs<fTwoParticleRangeEnd;}
+    bool    IsSinglePartBeam         ()const{return fOneParticleRangeBegin<fPhE&&fPhE<fOneParticleRangeEnd;}
+    bool    IsDoublePartBeam         ()const{return fTwoParticleRangeBegin<fPhE&&fPhE<fTwoParticleRangeEnd;}
 
     double GetPhE        ()const{return fPhE;}
     double GetPhEAbs     ()const{return fPhEAbs;}
@@ -102,6 +105,8 @@ class VPMTChannel:public VSamplingChannel{
     double fTime2080LeadZeroCross;
     double fTime2080LeadMid;
     double fTimeHalfMax;
+    double fTime01Max;
+    double fTime02Max;
     double fTimeIntegral;
 
     double fPhE,fPhE2;

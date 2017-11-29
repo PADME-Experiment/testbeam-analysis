@@ -75,6 +75,7 @@ void Eff_Ineff(const TFile&f, const std::string& outf){
         <<sigh->GetBinCenter(bin_i)<<"   "
         <<inef<<"   "
         <<noise<<"   "
+        <<nevt<<"   "
         <<std::endl;
     }
     out<<std::endl;
@@ -137,7 +138,7 @@ void sigma(){
 
 void TimeRes(const TFile&f, const std::string& outf, const std::string& runN){
   static std::ofstream out(outf);
-  out<<"TimeDiffMaxValue TimeDiffMaxValue_err TimeDiffHalfMaxValue TimeDiffHalfMaxValue_err TimeDiff2080LeadTrailCros TimeDiff2080LeadTrailCros_err TimeDiff2080LeadZeroCros TimeDiff2080LeadZeroCros_err TimeDiff2080Lead50 TimeDiff2080Lead50_err TimeDiffMeanTime TimeDiffMeanTime_err TimeDiffMeanTime2 TimeDiffMeanTime2_err TimeDiffMeanTimeAbs TimeDiffMeanTimeAbs_err TimeDiffIntegral TimeDiffIntegral_err "<<std::endl;;
+  out<<"TimeDiffMaxValue TimeDiffMaxValue_err TimeDiffHalfMaxValue TimeDiffHalfMaxValue_err TimeDiff2080LeadTrailCros TimeDiff2080LeadTrailCros_err TimeDiff2080LeadZeroCros TimeDiff2080LeadZeroCros_err TimeDiff2080Lead50 TimeDiff2080Lead50_err TimeDiffMeanTime TimeDiffMeanTime_err TimeDiffMeanTime2 TimeDiffMeanTime2_err TimeDiffMeanTimeAbs TimeDiffMeanTimeAbs_err TimeDiffIntegral TimeDiffIntegral_err TimeDiff01MaxValue TimeDiff01MaxValue_err TimeDiff02MaxValue TimeDiff02MaxValue_err "<<std::endl;;
 
 
   for(int ch_i=4;ch_i<8;++ch_i) {
@@ -160,7 +161,9 @@ void TimeRes(const TFile&f, const std::string& outf, const std::string& runN){
     TH2F* hist2f_TimeDiffMeanTime         = dynamic_cast<TH2F*>(f.FindObjectAny(Form("TimeDiffMeanTime_%d_%d"         ,std::min(ref,ch_i),std::max(ref,ch_i))));
     TH2F* hist2f_TimeDiffMeanTime2        = dynamic_cast<TH2F*>(f.FindObjectAny(Form("TimeDiffMeanTime2_%d_%d"        ,std::min(ref,ch_i),std::max(ref,ch_i))));
     TH2F* hist2f_TimeDiffMeanTimeAbs      = dynamic_cast<TH2F*>(f.FindObjectAny(Form("TimeDiffMeanTimeAbs_%d_%d"      ,std::min(ref,ch_i),std::max(ref,ch_i))));
-    TH2F* hist2f_TimeDiffIntegral         = dynamic_cast<TH2F*>(f.FindObjectAny(Form("TimeDiffIntegral_%d_%d"      ,std::min(ref,ch_i),std::max(ref,ch_i))));
+    TH2F* hist2f_TimeDiffIntegral         = dynamic_cast<TH2F*>(f.FindObjectAny(Form("TimeDiffIntegral_%d_%d"         ,std::min(ref,ch_i),std::max(ref,ch_i))));
+    TH2F* hist2f_TimeDiff01MaxValue     = dynamic_cast<TH2F*>(f.FindObjectAny(Form("TimeDiff01MaxValue_%d_%d"     ,std::min(ref,ch_i),std::max(ref,ch_i))));
+    TH2F* hist2f_TimeDiff02MaxValue     = dynamic_cast<TH2F*>(f.FindObjectAny(Form("TimeDiff02MaxValue_%d_%d"     ,std::min(ref,ch_i),std::max(ref,ch_i))));
     if(
         hist2f_TimeDiffMaxValue         ==nullptr||
         hist2f_TimeDiffHalfMaxValue     ==nullptr||
@@ -171,18 +174,24 @@ void TimeRes(const TFile&f, const std::string& outf, const std::string& runN){
         hist2f_TimeDiffMeanTime2        ==nullptr||
         hist2f_TimeDiffMeanTimeAbs      ==nullptr||
         hist2f_TimeDiffIntegral         ==nullptr||
+        hist2f_TimeDiff01MaxValue     ==nullptr||
+        hist2f_TimeDiff02MaxValue     ==nullptr||
         false)continue;
     TH1D*tmphist;
     out <<ch_i<<"  ";
-    tmphist=hist2f_TimeDiffMaxValue         ->ProjectionX("a",hist2f_TimeDiffMaxValue         ->GetYaxis()->FindBin(190),hist2f_TimeDiffMaxValue         ->GetYaxis()->FindBin(230));out<<tmphist->GetRMS(1) <<"  "   <<tmphist->GetRMSError(1) <<"  ";
-    tmphist=hist2f_TimeDiffHalfMaxValue     ->ProjectionX("a",hist2f_TimeDiffHalfMaxValue     ->GetYaxis()->FindBin(190),hist2f_TimeDiffHalfMaxValue     ->GetYaxis()->FindBin(230));out<<tmphist->GetRMS(1) <<"  "   <<tmphist->GetRMSError(1) <<"  ";
-    tmphist=hist2f_TimeDiff2080LeadTrailCros->ProjectionX("a",hist2f_TimeDiff2080LeadTrailCros->GetYaxis()->FindBin(190),hist2f_TimeDiff2080LeadTrailCros->GetYaxis()->FindBin(230));out<<tmphist->GetRMS(1) <<"  "   <<tmphist->GetRMSError(1) <<"  ";
-    tmphist=hist2f_TimeDiff2080LeadZeroCros ->ProjectionX("a",hist2f_TimeDiff2080LeadZeroCros ->GetYaxis()->FindBin(190),hist2f_TimeDiff2080LeadZeroCros ->GetYaxis()->FindBin(230));out<<tmphist->GetRMS(1) <<"  "   <<tmphist->GetRMSError(1) <<"  ";
-    tmphist=hist2f_TimeDiff2080Lead50       ->ProjectionX("a",hist2f_TimeDiff2080Lead50       ->GetYaxis()->FindBin(190),hist2f_TimeDiff2080Lead50       ->GetYaxis()->FindBin(230));out<<tmphist->GetRMS(1) <<"  "   <<tmphist->GetRMSError(1) <<"  ";
-    tmphist=hist2f_TimeDiffMeanTime         ->ProjectionX("a",hist2f_TimeDiffMeanTime         ->GetYaxis()->FindBin(190),hist2f_TimeDiffMeanTime         ->GetYaxis()->FindBin(230));out<<tmphist->GetRMS(1) <<"  "   <<tmphist->GetRMSError(1) <<"  ";
-    tmphist=hist2f_TimeDiffMeanTime2        ->ProjectionX("a",hist2f_TimeDiffMeanTime2        ->GetYaxis()->FindBin(190),hist2f_TimeDiffMeanTime2        ->GetYaxis()->FindBin(230));out<<tmphist->GetRMS(1) <<"  "   <<tmphist->GetRMSError(1) <<"  ";
-    tmphist=hist2f_TimeDiffMeanTimeAbs      ->ProjectionX("a",hist2f_TimeDiffMeanTimeAbs      ->GetYaxis()->FindBin(190),hist2f_TimeDiffMeanTimeAbs      ->GetYaxis()->FindBin(230));out<<tmphist->GetRMS(1) <<"  "   <<tmphist->GetRMSError(1) <<"  ";
-    tmphist=hist2f_TimeDiffIntegral         ->ProjectionX("a",hist2f_TimeDiffIntegral         ->GetYaxis()->FindBin(190),hist2f_TimeDiffIntegral         ->GetYaxis()->FindBin(230));out<<tmphist->GetRMS(1) <<"  "   <<tmphist->GetRMSError(1) <<"  ";
+    TF1* gausss=new TF1("gausss", "gaus");
+    static int sHistTimeDiff=0;
+    tmphist=hist2f_TimeDiffMaxValue         ->ProjectionX(Form("%s_%s",hist2f_TimeDiffMaxValue         ->GetName(),runN.c_str()),hist2f_TimeDiffMaxValue         ->GetYaxis()->FindBin(30),hist2f_TimeDiffMaxValue         ->GetYaxis()->FindBin(23000));tmphist->Fit("gausss",tmphist->GetEntries()<1000?"L":"");out<<gausss->GetParameter(2) <<"  "   <<gausss->GetParError(2) <<"  ";tmphist->Write();
+    tmphist=hist2f_TimeDiffHalfMaxValue     ->ProjectionX(Form("%s_%s",hist2f_TimeDiffHalfMaxValue     ->GetName(),runN.c_str()),hist2f_TimeDiffHalfMaxValue     ->GetYaxis()->FindBin(30),hist2f_TimeDiffHalfMaxValue     ->GetYaxis()->FindBin(23000));tmphist->Fit("gausss",tmphist->GetEntries()<1000?"L":"");out<<gausss->GetParameter(2) <<"  "   <<gausss->GetParError(2) <<"  ";tmphist->Write();
+    tmphist=hist2f_TimeDiff2080LeadTrailCros->ProjectionX(Form("%s_%s",hist2f_TimeDiff2080LeadTrailCros->GetName(),runN.c_str()),hist2f_TimeDiff2080LeadTrailCros->GetYaxis()->FindBin(30),hist2f_TimeDiff2080LeadTrailCros->GetYaxis()->FindBin(23000));tmphist->Fit("gausss",tmphist->GetEntries()<1000?"L":"");out<<gausss->GetParameter(2) <<"  "   <<gausss->GetParError(2) <<"  ";tmphist->Write();
+    tmphist=hist2f_TimeDiff2080LeadZeroCros ->ProjectionX(Form("%s_%s",hist2f_TimeDiff2080LeadZeroCros ->GetName(),runN.c_str()),hist2f_TimeDiff2080LeadZeroCros ->GetYaxis()->FindBin(30),hist2f_TimeDiff2080LeadZeroCros ->GetYaxis()->FindBin(23000));tmphist->Fit("gausss",tmphist->GetEntries()<1000?"L":"");out<<gausss->GetParameter(2) <<"  "   <<gausss->GetParError(2) <<"  ";tmphist->Write();
+    tmphist=hist2f_TimeDiff2080Lead50       ->ProjectionX(Form("%s_%s",hist2f_TimeDiff2080Lead50       ->GetName(),runN.c_str()),hist2f_TimeDiff2080Lead50       ->GetYaxis()->FindBin(30),hist2f_TimeDiff2080Lead50       ->GetYaxis()->FindBin(23000));tmphist->Fit("gausss",tmphist->GetEntries()<1000?"L":"");out<<gausss->GetParameter(2) <<"  "   <<gausss->GetParError(2) <<"  ";tmphist->Write();
+    tmphist=hist2f_TimeDiffMeanTime         ->ProjectionX(Form("%s_%s",hist2f_TimeDiffMeanTime         ->GetName(),runN.c_str()),hist2f_TimeDiffMeanTime         ->GetYaxis()->FindBin(30),hist2f_TimeDiffMeanTime         ->GetYaxis()->FindBin(23000));tmphist->Fit("gausss",tmphist->GetEntries()<1000?"L":"");out<<gausss->GetParameter(2) <<"  "   <<gausss->GetParError(2) <<"  ";tmphist->Write();
+    tmphist=hist2f_TimeDiffMeanTime2        ->ProjectionX(Form("%s_%s",hist2f_TimeDiffMeanTime2        ->GetName(),runN.c_str()),hist2f_TimeDiffMeanTime2        ->GetYaxis()->FindBin(30),hist2f_TimeDiffMeanTime2        ->GetYaxis()->FindBin(23000));tmphist->Fit("gausss",tmphist->GetEntries()<1000?"L":"");out<<gausss->GetParameter(2) <<"  "   <<gausss->GetParError(2) <<"  ";tmphist->Write();
+    tmphist=hist2f_TimeDiffMeanTimeAbs      ->ProjectionX(Form("%s_%s",hist2f_TimeDiffMeanTimeAbs      ->GetName(),runN.c_str()),hist2f_TimeDiffMeanTimeAbs      ->GetYaxis()->FindBin(30),hist2f_TimeDiffMeanTimeAbs      ->GetYaxis()->FindBin(23000));tmphist->Fit("gausss",tmphist->GetEntries()<1000?"L":"");out<<gausss->GetParameter(2) <<"  "   <<gausss->GetParError(2) <<"  ";tmphist->Write();
+    tmphist=hist2f_TimeDiffIntegral         ->ProjectionX(Form("%s_%s",hist2f_TimeDiffIntegral         ->GetName(),runN.c_str()),hist2f_TimeDiffIntegral         ->GetYaxis()->FindBin(30),hist2f_TimeDiffIntegral         ->GetYaxis()->FindBin(23000));tmphist->Fit("gausss",tmphist->GetEntries()<1000?"L":"");out<<gausss->GetParameter(2) <<"  "   <<gausss->GetParError(2) <<"  ";tmphist->Write();
+    tmphist=hist2f_TimeDiff01MaxValue     ->ProjectionX(Form("%s_%s",hist2f_TimeDiff01MaxValue     ->GetName(),runN.c_str()),hist2f_TimeDiff01MaxValue     ->GetYaxis()->FindBin(30),hist2f_TimeDiff01MaxValue     ->GetYaxis()->FindBin(23000));tmphist->Fit("gausss",tmphist->GetEntries()<1000?"L":"");out<<gausss->GetParameter(2) <<"  "   <<gausss->GetParError(2) <<"  ";tmphist->Write();
+    tmphist=hist2f_TimeDiff02MaxValue     ->ProjectionX(Form("%s_%s",hist2f_TimeDiff02MaxValue     ->GetName(),runN.c_str()),hist2f_TimeDiff02MaxValue     ->GetYaxis()->FindBin(30),hist2f_TimeDiff02MaxValue     ->GetYaxis()->FindBin(23000));tmphist->Fit("gausss",tmphist->GetEntries()<1000?"L":"");out<<gausss->GetParameter(2) <<"  "   <<gausss->GetParError(2) <<"  ";tmphist->Write();
     out<<runN;
     out<<std::endl;
   }
@@ -372,11 +381,13 @@ void ch11phe_ypos(const TFile&f, const std::string& outf){
 
 
 int PostAnalysis(){
+  TFile *tfileo=new TFile("temp.root","recreate");
   for(int run_i=500;run_i<1000;++run_i){
     std::string filename=Form("run_%d.lst.root",run_i);
     TFile nonfft50(filename.c_str(), "READ");
+    tfileo->cd();
     if(nonfft50.GetSize()<=0)continue;
-    //TimeRes  (nonfft50,"___timeres.dat",Form("%d",run_i));
+    TimeRes  (nonfft50,"___timeres.dat",Form("%d",run_i));
     Eff_Ineff(nonfft50,Form("%d-effinef.dat",run_i));
     //ch11phe_ypos(nonfft50,Form("%d",run_i));
   }
@@ -384,7 +395,10 @@ int PostAnalysis(){
   //PedestalCalc(f);
   //GainCalib(TFile ("nonfft-50.root", "READ"));
 
-  exit(0);
+  //new TBrowser();
+  //exit(0);
+  tfileo->Write();
+  tfileo->Close();
   return 0;
 }
 

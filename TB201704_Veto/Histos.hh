@@ -82,6 +82,8 @@ class Histos{
 
     TH2F* hist2f_TimeDiffMaxValue           [fNChanMax][fNChanMax];
     TH2F* hist2f_TimeDiffHalfMaxValue       [fNChanMax][fNChanMax];
+    TH2F* hist2f_TimeDiff02MaxValue         [fNChanMax][fNChanMax];
+    TH2F* hist2f_TimeDiff01MaxValue         [fNChanMax][fNChanMax];
     TH2F* hist2f_TimeDiff2080LeadTrailCros  [fNChanMax][fNChanMax];
     TH2F* hist2f_TimeDiff2080LeadZeroCros   [fNChanMax][fNChanMax];
     TH2F* hist2f_TimeDiff2080Lead50         [fNChanMax][fNChanMax];

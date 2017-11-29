@@ -83,7 +83,7 @@ Analyse::FillOscCumulatives()
 {
   if(!fSignalChannels[Universe::eROCh::eBTFCalo]->IsFired())return;
   static int nfilled=0;
-  if(nfilled++>1000)return;
+  if(nfilled++>100000)return;
 #pragma omp parallel
   for(auto sig_it=fSignalChannels.begin();sig_it!=fSignalChannels.end();++sig_it){
 #pragma omp single nowait
@@ -168,6 +168,8 @@ Analyse::FillTimes()
           fHists.hist2f_TimeDiff2080LeadZeroCros [ii][jj]->Fill((chii.GetTime2080LeadZeroCross () - chjj.GetTime2080LeadZeroCross ())/5./*ns*/,iijjampl);
           fHists.hist2f_TimeDiff2080Lead50       [ii][jj]->Fill((chii.GetTime2080LeadMid       () - chjj.GetTime2080LeadMid       ())/5./*ns*/,iijjampl);
           fHists.hist2f_TimeDiffHalfMaxValue     [ii][jj]->Fill((chii.GetTimeHalfMax           () - chjj.GetTimeHalfMax           ())/5./*ns*/,iijjampl);
+          fHists.hist2f_TimeDiff01MaxValue     [ii][jj]->Fill((chii.GetTime01Max           () - chjj.GetTime01Max           ())/5./*ns*/,iijjampl);
+          fHists.hist2f_TimeDiff02MaxValue     [ii][jj]->Fill((chii.GetTime02Max           () - chjj.GetTime02Max           ())/5./*ns*/,iijjampl);
           fHists.hist2f_TimeDiffMaxValue         [ii][jj]->Fill((chii.GetTimeMaxVal            () - chjj.GetTimeMaxVal            ())/5./*ns*/,iijjampl);
           fHists.hist2f_TimeDiffIntegral         [ii][jj]->Fill((chii.GetTimeIntegral          () - chjj.GetTimeIntegral          ())/5./*ns*/,iijjampl);
         }

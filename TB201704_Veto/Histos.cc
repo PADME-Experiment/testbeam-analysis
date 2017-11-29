@@ -190,9 +190,18 @@ Histos::CreateHistos()
       name ="TimeDiffMaxValue_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj)+lab;
       tmptobj=hist2f_TimeDiffMaxValue  [ii][jj]       =new TH2F(name.c_str(),title.c_str(),640,-80-.25,80-.25,350,-20,1000);
       fAllObj.emplace("TimeDiffMaxValue",tmptobj);
+
       name ="TimeDiffHalfMaxValue_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj)+lab;
       tmptobj=hist2f_TimeDiffHalfMaxValue   [ii][jj]  =new TH2F(name.c_str(),title.c_str(),640,-80-.25,80-.25,350,-20,1000);
       fAllObj.emplace("TimeDiffHalfMaxValue",tmptobj);
+
+      name ="TimeDiff01MaxValue_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj)+lab;
+      tmptobj=hist2f_TimeDiff01MaxValue   [ii][jj]  =new TH2F(name.c_str(),title.c_str(),640,-80-.25,80-.25,350,-20,1000);
+      fAllObj.emplace("TimeDiff01MaxValue",tmptobj);
+      name ="TimeDiff02MaxValue_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj)+lab;
+      tmptobj=hist2f_TimeDiff02MaxValue   [ii][jj]  =new TH2F(name.c_str(),title.c_str(),640,-80-.25,80-.25,350,-20,1000);
+      fAllObj.emplace("TimeDiff02MaxValue",tmptobj);
+
       name ="TimeDiff2080LeadTrailCros_"+chan_i_ss.str()+"_"+chan_j_ss.str(); title=name+uni.GetROName(ii)+" "+uni.GetROName(jj)+lab;
       tmptobj=hist2f_TimeDiff2080LeadTrailCros[ii][jj]=new TH2F(name.c_str(),title.c_str(),640,-80-.25,80-.25,350,-20,1000);
       fAllObj.emplace("TimeDiff2080LeadTrailCros",tmptobj);

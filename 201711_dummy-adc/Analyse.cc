@@ -111,18 +111,29 @@ Analyse::DummyChannelAnalyse()
     fHists.hist1f_ChanSlopeFitB        [0][ch_i]->Fill(ch->GetLinSlope_b  ());
     fHists.hist1f_ChanSlopeFitRMS      [0][ch_i]->Fill(ch->GetLinSlope_rms());
   }
+
+
+
   for(auto it=fTriggerChannels.rbegin();it!=fTriggerChannels.rend();++it){
     DummyChannel* ch=dynamic_cast<DummyChannel*>(it->second);
     int ch_i=it->first;
     if(ch==nullptr){ERROR("not a dummychannel");continue;}
     ch->Process();
-    //TH2F* hist2f_TrigOscCum           [1][ch_i];
-    //TH1F* hist1f_TrigPedestalsMean    [1][ch_i];
-    //TH1F* hist1f_TrigPedestalsRMS     [1][ch_i];
-    //TH1F* hist1f_TrigSlopeFitA        [1][ch_i];
-    //TH1F* hist1f_TrigSlopeFitB        [1][ch_i];
-    //TH1F* hist1f_TrigSlopeFitRMS      [1][ch_i];
-    //TH2F* hist2f_TrigSampleBySample   [1][ch_i];
+    //TH2F tmphist("tt","",128,0,1024,128,0,1024);
+    for(int i=0;i<1024;++i){
+      INFO(std::to_string(double(ch->GetSamp(i))));
+      fHists.hist2f_TrigOscCum           [0][ch_i]->Fill(i,ch->GetSamp(i));
+      fHists.hist2f_TrigOscCumT0         [0][ch_i]->Fill(i,ch->GetSampT0Cor(i));
+      //fHists.hist2f_TrigOscCum2d         [0][ch_i]->Fill(double(ch->CorT0(i)),double(i),ch->GetSamp(i)-ch->GetMean());
+      //tmphist.Fill(double(ch->CorT0(i)),double(i));
+    }
+    //fHists.hist2f_TrigOscCum2d         [0][ch_i]->Divide(
+    //fHists.hist2f_TrigOscCum2d         [0][ch_i], &tmphist);
+    fHists.hist1f_TrigPedestalsMean    [0][ch_i]->Fill(ch->GetMean        ());
+    fHists.hist1f_TrigPedestalsRMS     [0][ch_i]->Fill(ch->GetRMS         ());
+    fHists.hist1f_TrigSlopeFitA        [0][ch_i]->Fill(ch->GetLinSlope_a  ());
+    fHists.hist1f_TrigSlopeFitB        [0][ch_i]->Fill(ch->GetLinSlope_b  ());
+    fHists.hist1f_TrigSlopeFitRMS      [0][ch_i]->Fill(ch->GetLinSlope_rms());
   }
 
 }
@@ -194,6 +205,8 @@ Analyse::Process(std::string infile)
       nBoards++;
       UChar_t nTrg = adcB->GetNADCTriggers();
       UChar_t nChn = adcB->GetNADCChannels();
+      if(nTrg!=4)ERROR("nTrig!=4");
+      if(nChn!=32)ERROR("nChn!=32");
       //if(verbose>2){
       //  printf("\tBoard %u Board Id %u LVDS %u Status %u GMsk 0x%1x EvtCnt %u Time %u ActMsk 0x%08x AccMsk 0x%08x #Trg %u #Chn %u\n",
       //      b,adcB->GetBoardId(),adcB->GetLVDSPattern(),adcB->GetStatus(),adcB->GetGroupMask(),adcB->GetEventCounter(),
@@ -250,8 +263,7 @@ Analyse::Process(std::string infile)
   void
 Analyse::Finalize()
 {
-  for(auto it=fSignalChannels.begin();it!=fSignalChannels.end();++it)
-  {
+  for(auto it=fSignalChannels.begin();it!=fSignalChannels.end();++it){
     DummyChannel* ch=dynamic_cast<DummyChannel*>(it->second);
     int ch_i=it->first;
     if(ch==nullptr){ERROR("not a dummychannel");}
@@ -275,16 +287,57 @@ Analyse::Finalize()
 
         fHists.hist1f_ChanAmplFluctSampBySamp  [0][ch_i]->Fill(cmax-cmin    );
         fHists.hist1f_ChanAmplFluctSampBySampT0[0][ch_i]->Fill(cmaxt0-cmint0);
-        INFO("");
-        std::cout<<cmax<<"  "<<cmin <<"   "   <<cmaxt0<<"  "<<cmint0<<std::endl;
         if(min>cmin)min=cmin;
         if(max<cmax)min=cmax;
       }
       //fHists.hist1f_ChanMaxAmplFluct     [0][ch_i]->Fill(max-min);
 
-      fHists.hist1f_SigPedMean->Fill(fHists.hist1f_ChanPedestalsMean[0][ch_i]->GetRMS());
-      fHists.hist1f_SigPedSig ->Fill(fHists.hist1f_ChanPedestalsRMS [0][ch_i]->GetRMS());
+      fHists.hist1f_ChanSigPedMean->Fill(fHists.hist1f_ChanPedestalsMean[0][ch_i]->GetRMS());
+      fHists.hist1f_ChanSigPedSig ->Fill(fHists.hist1f_ChanPedestalsRMS [0][ch_i]->GetRMS());
     }
   }
+
+
+
+
+
+  for(auto it=fTriggerChannels.begin();it!=fTriggerChannels.end();++it){
+    DummyChannel* ch=dynamic_cast<DummyChannel*>(it->second);
+    int ch_i=it->first;
+    if(ch==nullptr){ERROR("not a dummychannel");}
+    else{
+      double min=1e9;
+      double max=-1e9;
+
+      for(int bin_i=1;bin_i<=1024;++bin_i){
+        TH1D* proj  =fHists.hist2f_TrigOscCum  [0][ch_i]->ProjectionY("nont0",bin_i,bin_i);
+        TH1D* projt0=fHists.hist2f_TrigOscCumT0[0][ch_i]->ProjectionY("t0",bin_i,bin_i);
+
+        double cmin  =proj  ->GetBinCenter(proj  ->FindFirstBinAbove());
+        double cmax  =proj  ->GetBinCenter(proj  ->FindLastBinAbove() );
+        double cmint0=projt0->GetBinCenter(projt0->FindFirstBinAbove());
+        double cmaxt0=projt0->GetBinCenter(projt0->FindLastBinAbove() );
+        //proj->GetMinimumAndMaximum  (cmin  ,cmax);
+        //projt0->GetMinimumAndMaximum(cmint0,cmaxt0);
+
+        fHists.hist1f_TrigSigmaSampBySamp  [0][ch_i]->Fill(proj  ->GetRMS());
+        fHists.hist1f_TrigSigmaSampBySampT0[0][ch_i]->Fill(projt0->GetRMS());
+
+        fHists.hist1f_TrigAmplFluctSampBySamp  [0][ch_i]->Fill(cmax-cmin    );
+        fHists.hist1f_TrigAmplFluctSampBySampT0[0][ch_i]->Fill(cmaxt0-cmint0);
+        if(min>cmin)min=cmin;
+        if(max<cmax)min=cmax;
+      }
+      //fHists.hist1f_TrigMaxAmplFluct     [0][ch_i]->Fill(max-min);
+
+      fHists.hist1f_TrigSigPedMean->Fill(fHists.hist1f_TrigPedestalsMean[0][ch_i]->GetRMS());
+      fHists.hist1f_TrigSigPedSig ->Fill(fHists.hist1f_TrigPedestalsRMS [0][ch_i]->GetRMS());
+    }
+  }
+
+
+
+
+
   HWDestr();
 }

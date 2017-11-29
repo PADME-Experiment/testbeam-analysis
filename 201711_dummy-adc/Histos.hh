@@ -20,12 +20,12 @@ class Histos{
     std::string fOutRootFileName;
 
   public:
-   TH1F* hist1f_SigPedMean;
-   TH1F* hist1f_SigPedSig ;
+   TH1F* hist1f_TrigSigPedMean;
+   TH1F* hist1f_TrigSigPedSig ;
+   TH1F* hist1f_ChanSigPedMean;
+   TH1F* hist1f_ChanSigPedSig ;
     TH2F* hist2f_ChanOscCum           [fNBoards][fNChanMax];
-    //TH2F* hist2f_ChanOscCum2d         [fNBoards][fNChanMax];
     TH2F* hist2f_ChanOscCumT0         [fNBoards][fNChanMax];
-    //TH1F* hist1f_ChanMaxAmplFluct     [fNBoards][fNChanMax];
     TH1F* hist1f_ChanSigmaSampBySamp  [fNBoards][fNChanMax];
     TH1F* hist1f_ChanSigmaSampBySampT0[fNBoards][fNChanMax];
     TH1F* hist1f_ChanAmplFluctSampBySamp  [fNBoards][fNChanMax];
@@ -35,21 +35,40 @@ class Histos{
     TH1F* hist1f_ChanSlopeFitA        [fNBoards][fNChanMax];
     TH1F* hist1f_ChanSlopeFitB        [fNBoards][fNChanMax];
     TH1F* hist1f_ChanSlopeFitRMS      [fNBoards][fNChanMax];
+    //TH2F* hist2f_ChanOscCum2d         [fNBoards][fNChanMax];
+    //TH1F* hist1f_ChanMaxAmplFluct     [fNBoards][fNChanMax];
     //TH2F* hist2f_ChanSampleBySample   [fNBoards][fNChanMax];
 
-    TH2F* hist2f_TrigOscCum           [fNBoards][fNTrigMax];
-    TH1F* hist1f_TrigPedestalsMean    [fNBoards][fNTrigMax];
-    TH1F* hist1f_TrigPedestalsRMS     [fNBoards][fNTrigMax];
-    TH1F* hist1f_TrigSlopeFitA        [fNBoards][fNTrigMax];
-    TH1F* hist1f_TrigSlopeFitB        [fNBoards][fNTrigMax];
-    TH1F* hist1f_TrigSlopeFitRMS      [fNBoards][fNTrigMax];
-    TH2F* hist2f_TrigSampleBySample   [fNBoards][fNTrigMax];
+    TH2F* hist2f_TrigOscCum                [fNBoards][fNTrigMax];
+    TH2F* hist2f_TrigOscCumT0              [fNBoards][fNTrigMax];
+    TH1F* hist1f_TrigSigmaSampBySamp       [fNBoards][fNTrigMax];
+    TH1F* hist1f_TrigSigmaSampBySampT0     [fNBoards][fNTrigMax];
+    TH1F* hist1f_TrigAmplFluctSampBySamp   [fNBoards][fNTrigMax];
+    TH1F* hist1f_TrigAmplFluctSampBySampT0 [fNBoards][fNTrigMax];
+    TH1F* hist1f_TrigPedestalsMean         [fNBoards][fNTrigMax];
+    TH1F* hist1f_TrigPedestalsRMS          [fNBoards][fNTrigMax];
+    TH1F* hist1f_TrigSlopeFitA             [fNBoards][fNTrigMax];
+    TH1F* hist1f_TrigSlopeFitB             [fNBoards][fNTrigMax];
+    TH1F* hist1f_TrigSlopeFitRMS           [fNBoards][fNTrigMax];
+    //TH2F* hist2f_TrigOscCum2d              [fNBoards][fNTrigMax];
+    //TH1F* hist1f_TrigMaxAmplFluct          [fNBoards][fNTrigMax];
+    //TH2F* hist2f_TrigSampleBySample        [fNBoards][fNTrigMax];
+
+
+
+
+
+
+
+
+
+
 
 
   private:
     std::multimap<std::string,TObject*>fAllObj;
 
- public:
+  public:
     Histos(const std::string& fn){
       fOutRootFileName = fn;
       CreateHistos();

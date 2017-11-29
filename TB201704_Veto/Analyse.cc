@@ -39,10 +39,6 @@ Analyse::HWInit()
   fSignalChannels [Universe::eROCh::eB4S3    ]=new SiPM                 ();
   fSignalChannels [Universe::eROCh::eB4S4    ]=new SiPM                 ();
   fSignalChannels [Universe::eROCh::eBTFCalo ]=new BTFCalorimeterChannel();
-//  fSignalChannels [Universe::eROCh::eB5S1    ]=new SiPM                 ();
-//  fSignalChannels [Universe::eROCh::eB5S2    ]=new SiPM                 ();
-//  fSignalChannels [Universe::eROCh::eB5S3    ]=new SiPM                 ();
-//  fSignalChannels [Universe::eROCh::eB5S4    ]=new SiPM                 ();
   fTriggerChannels[0 ]=new TriggerChannel        ();
   fTriggerChannels[1 ]=new TriggerChannel        ();
   fTriggerChannels[2 ]=new TriggerChannel        ();
@@ -53,22 +49,22 @@ Analyse::HWInit()
   fTriggerChannels[2]->SetName("Trig3");
   fTriggerChannels[3]->SetName("Trig4");
 
-fSignalChannels [Universe::eROCh::eB1S1    ]->SetGain(4*5.15);
-fSignalChannels [Universe::eROCh::eB1S2    ]->SetGain(4*5.15);
-fSignalChannels [Universe::eROCh::eB1S3    ]->SetGain(4*5.15);
-fSignalChannels [Universe::eROCh::eB1S4    ]->SetGain(4*5.15);
-fSignalChannels [Universe::eROCh::eB2S1    ]->SetGain(4*5.15);
-fSignalChannels [Universe::eROCh::eB2S2    ]->SetGain(4*5.15);
-fSignalChannels [Universe::eROCh::eB2S3    ]->SetGain(4*5.15);
-fSignalChannels [Universe::eROCh::eB2S4    ]->SetGain(4*5.15);
-fSignalChannels [Universe::eROCh::eB3S1    ]->SetGain(4*5.15);
-fSignalChannels [Universe::eROCh::eB3S2    ]->SetGain(4*5.15);
-fSignalChannels [Universe::eROCh::eB3S3    ]->SetGain(4*5.15);
-fSignalChannels [Universe::eROCh::eB3S4    ]->SetGain(4*5.15);
-fSignalChannels [Universe::eROCh::eB4S1    ]->SetGain(4*2.31);
-fSignalChannels [Universe::eROCh::eB4S2    ]->SetGain(4*2.31);
-fSignalChannels [Universe::eROCh::eB4S3    ]->SetGain(4*2.31);
-fSignalChannels [Universe::eROCh::eB4S4    ]->SetGain(4*2.31);
+  fSignalChannels [Universe::eROCh::eB1S1    ]->SetGain(4*5.15);
+  fSignalChannels [Universe::eROCh::eB1S2    ]->SetGain(4*5.15);
+  fSignalChannels [Universe::eROCh::eB1S3    ]->SetGain(4*5.15);
+  fSignalChannels [Universe::eROCh::eB1S4    ]->SetGain(4*5.15);
+  fSignalChannels [Universe::eROCh::eB2S1    ]->SetGain(4*5.15);
+  fSignalChannels [Universe::eROCh::eB2S2    ]->SetGain(4*5.15);
+  fSignalChannels [Universe::eROCh::eB2S3    ]->SetGain(4*5.15);
+  fSignalChannels [Universe::eROCh::eB2S4    ]->SetGain(4*5.15);
+  fSignalChannels [Universe::eROCh::eB3S1    ]->SetGain(4*5.15);
+  fSignalChannels [Universe::eROCh::eB3S2    ]->SetGain(4*5.15);
+  fSignalChannels [Universe::eROCh::eB3S3    ]->SetGain(4*5.15);
+  fSignalChannels [Universe::eROCh::eB3S4    ]->SetGain(4*5.15);
+  fSignalChannels [Universe::eROCh::eB4S1    ]->SetGain(4*2.31);
+  fSignalChannels [Universe::eROCh::eB4S2    ]->SetGain(4*2.31);
+  fSignalChannels [Universe::eROCh::eB4S3    ]->SetGain(4*2.31);
+  fSignalChannels [Universe::eROCh::eB4S4    ]->SetGain(4*2.31);
 
 
 }
@@ -82,22 +78,12 @@ Analyse::HWDestr()
   fTriggerChannels.clear();
 }
 
-void
-Analyse::FillOscCumulatives(){
-  if(
-      //!fSignalChannels[Universe::eROCh::eBTFCalo]->IsSinglePartBeam()
-      fSignalChannels[Universe::eROCh::eBTFCalo]->IsFired()
-  //    ||fSignalChannels[Universe::eROCh::eH3]->IsFired() //VTU
-  //    ||fSignalChannels[Universe::eROCh::eY4]->IsFired()
-  //    ||fSignalChannels[Universe::eROCh::eH5]->IsFired() //VBU
-  //    ||fSignalChannels[Universe::eROCh::eX5]->IsFired()
-  //    ||fSignalChannels[Universe::eROCh::eH2]->IsFired() //VTD
-  //    ||fSignalChannels[Universe::eROCh::eY5]->IsFired()
-  //    ||fSignalChannels[Universe::eROCh::eH1]->IsFired() //VBD
-  //    ||fSignalChannels[Universe::eROCh::eX4]->IsFired()
-    )return;
+  void
+Analyse::FillOscCumulatives()
+{
+  if(!fSignalChannels[Universe::eROCh::eBTFCalo]->IsFired())return;
   static int nfilled=0;
-  //if(nfilled++>1000)return;
+  if(nfilled++>100000)return;
 #pragma omp parallel
   for(auto sig_it=fSignalChannels.begin();sig_it!=fSignalChannels.end();++sig_it){
 #pragma omp single nowait
@@ -105,11 +91,10 @@ Analyse::FillOscCumulatives(){
       unsigned int chan_i=int(sig_it->first);
       VPMTChannel& ch=*sig_it->second;
       fHists.hist1f_Pedestals[chan_i]->Fill(ch.GetPedestal());
-      for(UShort_t s=0;s<1024;s++){
-          fHists.hist2f_OscCum[chan_i]->Fill(s,ch.GetVal(s));
-          fHists.hist2f_OscCumT0Fixed[chan_i]->Fill(s,ch.GetValT0Ped(s));
-        if(nfilled<100)
-          fHists.hist2f_SignalStudy       [chan_i]->SetBinContent(s+1,nfilled,-ch.GetValT0Ped(s));
+      for(UShort_t s=0;s<1024;++s){
+        fHists.hist2f_OscCum[chan_i]->Fill(s,ch.GetVal(s));
+        fHists.hist2f_OscCumT0Fixed[chan_i]->Fill(s,ch.GetValT0Ped(s));
+        if(nfilled<100) fHists.hist2f_SignalStudy[chan_i]->SetBinContent(s+1,nfilled,-ch.GetValT0Ped(s));
       }
     }
   }
@@ -145,7 +130,6 @@ Analyse::FillGraphTrends()
     fHists.graph_PPStab_Time    [ii]->SetPoint(graphpointnum,graphpointnum,chii.GetNoiseSampMax());
     fHists.hist1f_PPStab        [ii]->Fill    (                            chii.GetNoiseSampMax());
   }
-
 }
 
   void
@@ -161,36 +145,33 @@ Analyse::FillTimes()
         VPMTChannel&chjj= *sigjj_it->second;
         int jj=int(sigjj_it->first);
 
-        if(true //||true
-            //&&int(chii.GetPhEAbs())/5==int(chjj.GetPhEAbs())/5
-            &&int(chii.GetPhEAbs())+5>int(chjj.GetPhEAbs())
-            &&int(chii.GetPhEAbs())-5<int(chjj.GetPhEAbs())
+        if(true //||false
+            //&&int(chii.GetPhEAbs())+5>int(chjj.GetPhEAbs())
+            //&&int(chii.GetPhEAbs())-5<int(chjj.GetPhEAbs())
             &&fSignalChannels[Universe::eROCh::eBTFCalo]->IsSinglePartBeam()
-            //&&!fSignalChannels[Universe::eROCh::eH3]->IsFired() //VTU
-            //&&!fSignalChannels[Universe::eROCh::eY4]->IsFired()
-            //&&!fSignalChannels[Universe::eROCh::eH5]->IsFired() //VBU
-            //&&!fSignalChannels[Universe::eROCh::eX5]->IsFired()
-            //&&!fSignalChannels[Universe::eROCh::eH2]->IsFired() //VTD
-            //&&!fSignalChannels[Universe::eROCh::eY5]->IsFired()
-            //&&!fSignalChannels[Universe::eROCh::eH1]->IsFired() //VBD
-            //&&!fSignalChannels[Universe::eROCh::eX4]->IsFired()
             &&chii.IsFired()
             &&chjj.IsFired()
           ){
           fHists.hist2f_PhElectrChCorAbsSinglePartBeamVetoed[ii][jj]->Fill(chii.GetPhEAbs(),chjj.GetPhEAbs());
 
-          fHists.hist2f_PhElectrChCorFFTAbsSinglePartBeamVetoed[ii][jj]->Fill(chii.GetPhEAbsLowPass(),chjj.GetPhEAbsLowPass());
-          fHists.hist2f_TimeDiffMeanTimeFFT      [ii][jj]->Fill((chii.GetTimeMeanLowPass       () - chjj.GetTimeMeanLowPass       ())/5./*ns*/,sqrt(chii.GetPhEAbsLowPass()*chii.GetPhEAbsLowPass()+chjj.GetPhEAbsLowPass()*chjj.GetPhEAbsLowPass()));
-          fHists.hist2f_TimeDiffMeanTimeFFTAbs   [ii][jj]->Fill((chii.GetTimeMeanAbsLowPass    () - chjj.GetTimeMeanAbsLowPass    ())/5./*ns*/,sqrt(chii.GetPhEAbsLowPass()*chii.GetPhEAbsLowPass()+chjj.GetPhEAbsLowPass()*chjj.GetPhEAbsLowPass()));
 
-          fHists.hist2f_TimeDiffMeanTime         [ii][jj]->Fill((chii.GetTimeMean              () - chjj.GetTimeMean              ())/5./*ns*/,sqrt(chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs()));
-          fHists.hist2f_TimeDiffMeanTime2        [ii][jj]->Fill((chii.GetTimeMean2             () - chjj.GetTimeMean2             ())/5./*ns*/,sqrt(chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs()));
-          fHists.hist2f_TimeDiffMeanTimeAbs      [ii][jj]->Fill((chii.GetTimeMeanAbs           () - chjj.GetTimeMeanAbs           ())/5./*ns*/,sqrt(chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs()));
-          fHists.hist2f_TimeDiff2080LeadTrailCros[ii][jj]->Fill((chii.GetTime2080LeadTrailCross() - chjj.GetTime2080LeadTrailCross())/5./*ns*/,sqrt(chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs()));
-          fHists.hist2f_TimeDiff2080LeadZeroCros [ii][jj]->Fill((chii.GetTime2080LeadZeroCross () - chjj.GetTime2080LeadZeroCross ())/5./*ns*/,sqrt(chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs()));
-          fHists.hist2f_TimeDiff2080Lead50       [ii][jj]->Fill((chii.GetTime2080LeadMid       () - chjj.GetTime2080LeadMid       ())/5./*ns*/,sqrt(chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs()));
-          fHists.hist2f_TimeDiffHalfMaxValue     [ii][jj]->Fill((chii.GetTimeHalfMax           () - chjj.GetTimeHalfMax           ())/5./*ns*/,sqrt(chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs()));
-          fHists.hist2f_TimeDiffMaxValue         [ii][jj]->Fill((chii.GetTimeMaxVal            () - chjj.GetTimeMaxVal            ())/5./*ns*/,sqrt(chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs()));
+          fHists.hist2f_PhElectrChCorFFTAbsSinglePartBeamVetoed[ii][jj]->Fill(chii.GetPhEAbsLowPass(),chjj.GetPhEAbsLowPass());
+          fHists.hist2f_TimeDiffMeanTimeFFT      [ii][jj]->Fill((chii.GetTimeMeanLowPass       () - chjj.GetTimeMeanLowPass       ())/5./*ns*/,sqrt((chii.GetPhEAbsLowPass()*chii.GetPhEAbsLowPass()+chjj.GetPhEAbsLowPass()*chjj.GetPhEAbsLowPass())/2.));
+          fHists.hist2f_TimeDiffMeanTimeFFTAbs   [ii][jj]->Fill((chii.GetTimeMeanAbsLowPass    () - chjj.GetTimeMeanAbsLowPass    ())/5./*ns*/,sqrt((chii.GetPhEAbsLowPass()*chii.GetPhEAbsLowPass()+chjj.GetPhEAbsLowPass()*chjj.GetPhEAbsLowPass())/2.));
+
+          //double iijjampl=sqrt((chii.GetPhEAbs()*chii.GetPhEAbs()+chjj.GetPhEAbs()*chjj.GetPhEAbs())/2.);
+          double iijjampl=(sqrt(chii.GetPhEAbs())+sqrt(chjj.GetPhEAbs()))/2.; iijjampl*=iijjampl;
+          fHists.hist2f_TimeDiffMeanTime         [ii][jj]->Fill((chii.GetTimeMean              () - chjj.GetTimeMean              ())/5./*ns*/,iijjampl);
+          fHists.hist2f_TimeDiffMeanTime2        [ii][jj]->Fill((chii.GetTimeMean2             () - chjj.GetTimeMean2             ())/5./*ns*/,iijjampl);
+          fHists.hist2f_TimeDiffMeanTimeAbs      [ii][jj]->Fill((chii.GetTimeMeanAbs           () - chjj.GetTimeMeanAbs           ())/5./*ns*/,iijjampl);
+          fHists.hist2f_TimeDiff2080LeadTrailCros[ii][jj]->Fill((chii.GetTime2080LeadTrailCross() - chjj.GetTime2080LeadTrailCross())/5./*ns*/,iijjampl);
+          fHists.hist2f_TimeDiff2080LeadZeroCros [ii][jj]->Fill((chii.GetTime2080LeadZeroCross () - chjj.GetTime2080LeadZeroCross ())/5./*ns*/,iijjampl);
+          fHists.hist2f_TimeDiff2080Lead50       [ii][jj]->Fill((chii.GetTime2080LeadMid       () - chjj.GetTime2080LeadMid       ())/5./*ns*/,iijjampl);
+          fHists.hist2f_TimeDiffHalfMaxValue     [ii][jj]->Fill((chii.GetTimeHalfMax           () - chjj.GetTimeHalfMax           ())/5./*ns*/,iijjampl);
+          fHists.hist2f_TimeDiff01MaxValue     [ii][jj]->Fill((chii.GetTime01Max           () - chjj.GetTime01Max           ())/5./*ns*/,iijjampl);
+          fHists.hist2f_TimeDiff02MaxValue     [ii][jj]->Fill((chii.GetTime02Max           () - chjj.GetTime02Max           ())/5./*ns*/,iijjampl);
+          fHists.hist2f_TimeDiffMaxValue         [ii][jj]->Fill((chii.GetTimeMaxVal            () - chjj.GetTimeMaxVal            ())/5./*ns*/,iijjampl);
+          fHists.hist2f_TimeDiffIntegral         [ii][jj]->Fill((chii.GetTimeIntegral          () - chjj.GetTimeIntegral          ())/5./*ns*/,iijjampl);
         }
       }
     }
@@ -232,54 +213,45 @@ Analyse::FillPhEDistr()
       }
     }
   }
-      if(fSignalChannels[Universe::eROCh::eBTFCalo]->IsSinglePartBeam()){
-        double a[]={
-          fSignalChannels[(Universe::eROCh) 0]->GetPhE(),
-          fSignalChannels[(Universe::eROCh) 1]->GetPhE(),
-          fSignalChannels[(Universe::eROCh) 2]->GetPhE(),
-          fSignalChannels[(Universe::eROCh) 3]->GetPhE(),
-          };
-        double b[]={
-          fSignalChannels[(Universe::eROCh)11]->GetPhE(),
-          fSignalChannels[(Universe::eROCh)10]->GetPhE(),
-          fSignalChannels[(Universe::eROCh) 9]->GetPhE(),
-          fSignalChannels[(Universe::eROCh) 8]->GetPhE(),
-        };
-        if(
-            (
-             (fSignalChannels[(Universe::eROCh) 4]->IsFired()?1:0)+
-             (fSignalChannels[(Universe::eROCh) 5]->IsFired()?1:0)+
-             (fSignalChannels[(Universe::eROCh) 6]->IsFired()?1:0)+
-             (fSignalChannels[(Universe::eROCh) 7]->IsFired()?1:0)
-            )>3&&
-            (
-             (fSignalChannels[(Universe::eROCh)12]->IsFired()?1:0)+
-             (fSignalChannels[(Universe::eROCh)13]->IsFired()?1:0)+
-             (fSignalChannels[(Universe::eROCh)14]->IsFired()?1:0)+
-             (fSignalChannels[(Universe::eROCh)15]->IsFired()?1:0)
-            )>3
-          ){
-          int i=0;
-          fHists.hist1f_lightCollectRto[i]->Fill((b[i]<1e-8?0:log(b[i]))-(a[i]<1e-8?0:log(a[i])));i++;
-          fHists.hist1f_lightCollectRto[i]->Fill((b[i]<1e-8?0:log(b[i]))-(a[i]<1e-8?0:log(a[i])));i++;
-          fHists.hist1f_lightCollectRto[i]->Fill((b[i]<1e-8?0:log(b[i]))-(a[i]<1e-8?0:log(a[i])));i++;
-          fHists.hist1f_lightCollectRto[i]->Fill((b[i]<1e-8?0:log(b[i]))-(a[i]<1e-8?0:log(a[i])));i++;
-        }
-      }
+  if(fSignalChannels[Universe::eROCh::eBTFCalo]->IsSinglePartBeam()){
+    double a[]={
+      fSignalChannels[(Universe::eROCh) 0]->GetPhE(),
+      fSignalChannels[(Universe::eROCh) 1]->GetPhE(),
+      fSignalChannels[(Universe::eROCh) 2]->GetPhE(),
+      fSignalChannels[(Universe::eROCh) 3]->GetPhE(),
+    };
+    double b[]={
+      fSignalChannels[(Universe::eROCh)11]->GetPhE(),
+      fSignalChannels[(Universe::eROCh)10]->GetPhE(),
+      fSignalChannels[(Universe::eROCh) 9]->GetPhE(),
+      fSignalChannels[(Universe::eROCh) 8]->GetPhE(),
+    };
+    if(
+        ( // at least 3 of 4 scintillators are fired
+         (fSignalChannels[(Universe::eROCh) 4]->IsFired()?1:0)+
+         (fSignalChannels[(Universe::eROCh) 5]->IsFired()?1:0)+
+         (fSignalChannels[(Universe::eROCh) 6]->IsFired()?1:0)+
+         (fSignalChannels[(Universe::eROCh) 7]->IsFired()?1:0)
+        )>3&&
+        (
+         (fSignalChannels[(Universe::eROCh)12]->IsFired()?1:0)+
+         (fSignalChannels[(Universe::eROCh)13]->IsFired()?1:0)+
+         (fSignalChannels[(Universe::eROCh)14]->IsFired()?1:0)+
+         (fSignalChannels[(Universe::eROCh)15]->IsFired()?1:0)
+        )>3
+      ){
+      int i=0;
+      fHists.hist1f_lightCollectRto[i]->Fill((b[i]<1e-8?0:log(b[i]))-(a[i]<1e-8?0:log(a[i])));i++;
+      fHists.hist1f_lightCollectRto[i]->Fill((b[i]<1e-8?0:log(b[i]))-(a[i]<1e-8?0:log(a[i])));i++;
+      fHists.hist1f_lightCollectRto[i]->Fill((b[i]<1e-8?0:log(b[i]))-(a[i]<1e-8?0:log(a[i])));i++;
+      fHists.hist1f_lightCollectRto[i]->Fill((b[i]<1e-8?0:log(b[i]))-(a[i]<1e-8?0:log(a[i])));i++;
+    }
+  }
 }
   void
 Analyse::MakeFFT()
 {
   //if(
-  //    !fSignalChannels[Universe::eROCh::eCalo]->IsSinglePartBeam()
-  //    ||fSignalChannels[Universe::eROCh::eH3]->IsFired() //VTU
-  //    ||fSignalChannels[Universe::eROCh::eY4]->IsFired()
-  //    ||fSignalChannels[Universe::eROCh::eH5]->IsFired() //VBU
-  //    ||fSignalChannels[Universe::eROCh::eX5]->IsFired()
-  //    ||fSignalChannels[Universe::eROCh::eH2]->IsFired() //VTD
-  //    ||fSignalChannels[Universe::eROCh::eY5]->IsFired()
-  //    ||fSignalChannels[Universe::eROCh::eH1]->IsFired() //VBD
-  //    ||fSignalChannels[Universe::eROCh::eX4]->IsFired()
   //  )return;
   Universe& uni=Universe::GetInstance();
   static int nfilled=0;
@@ -320,13 +292,16 @@ Analyse::FillHistos()
 {
   for(auto sigii_it=fSignalChannels.begin();sigii_it!=fSignalChannels.end();++sigii_it){
     int ii=int(sigii_it->first);
-    if(sigii_it->second->IsFired())
+    if(sigii_it->second->IsFired()){
+      fHists.hist2f_CorrMatrix->Fill(ii,ii);
       for(auto sigjj_it=std::next(sigii_it);sigjj_it!=fSignalChannels.end();++sigjj_it){
         if(sigjj_it->second->IsFired()){
           int jj=int(sigjj_it->first);
           fHists.hist2f_CorrMatrix->Fill(ii,jj);
+          fHists.hist2f_CorrMatrix->Fill(jj,ii);
         }
       }
+    }
   }
 
 
@@ -338,39 +313,27 @@ Analyse::FillHistos()
       VPMTChannel&chii= *sigii_it->second;
       int ii=int(sigii_it->first);
       if(true
-          //&&fSignalChannels[Universe::eROCh::eBTFCalo]->IsSinglePartBeam()
-          //&&!fSignalChannels[Universe::eROCh::eH3]->IsFired() //VTU
-          //&&!fSignalChannels[Universe::eROCh::eY4]->IsFired()
-          //&&!fSignalChannels[Universe::eROCh::eH5]->IsFired() //VBU
-          //&&!fSignalChannels[Universe::eROCh::eX5]->IsFired()
-          //&&!fSignalChannels[Universe::eROCh::eH2]->IsFired() //VTD
-          //&&!fSignalChannels[Universe::eROCh::eY5]->IsFired()
-          //&&!fSignalChannels[Universe::eROCh::eH1]->IsFired() //VBD
-          //&&!fSignalChannels[Universe::eROCh::eX4]->IsFired()
-
-          //&&(ii==int(Universe::eROCh::eX1)||ii==int(Universe::eROCh::eH4)||//D2
-          //  (fSignalChannels[Universe::eROCh::eX1]->IsFired()&&
-          //   fSignalChannels[Universe::eROCh::eH4]->IsFired()))
-          //&&(ii==int(Universe::eROCh::eX6)||ii==int(Universe::eROCh::eH7)||//D4
-          //  (fSignalChannels[Universe::eROCh::eX6]->IsFired()&&
-          //   fSignalChannels[Universe::eROCh::eH7]->IsFired()))
-          //&&(ii==int(Universe::eROCh::eX3)||ii==int(Universe::eROCh::eH6)||//D6
-          //  (fSignalChannels[Universe::eROCh::eX3]->IsFired()&&
-          //   fSignalChannels[Universe::eROCh::eH6]->IsFired()))
-          //&&(ii==int(Universe::eROCh::eX8)||ii==int(Universe::eROCh::eH8)||//D8
-          //  (fSignalChannels[Universe::eROCh::eX8]->IsFired()&&
-          //   fSignalChannels[Universe::eROCh::eH8]->IsFired()))
-
+          &&( // at least 2 of 4 scintillators are fired
+            (fSignalChannels[(Universe::eROCh) 4]->IsFired()?1:0)+
+            (fSignalChannels[(Universe::eROCh) 5]->IsFired()?1:0)+
+            (fSignalChannels[(Universe::eROCh) 6]->IsFired()?1:0)+
+            (fSignalChannels[(Universe::eROCh) 7]->IsFired()?1:0)
+            )>2
+          &&(
+            (fSignalChannels[(Universe::eROCh)12]->IsFired()?1:0)+
+            (fSignalChannels[(Universe::eROCh)13]->IsFired()?1:0)+
+            (fSignalChannels[(Universe::eROCh)14]->IsFired()?1:0)+
+            (fSignalChannels[(Universe::eROCh)15]->IsFired()?1:0)
+            )>2
         ){
-          fHists.hist1f_PhElectrEff     [ii]->Fill(chii.     GetPhE());
-          fHists.hist1f_PhElectrNoise   [ii]->Fill(chii.GetPhENoise());
-          fHists.hist1f_PhElectrAbsEff  [ii]->Fill(chii.     GetPhEAbs());
-          fHists.hist1f_PhElectrAbsNoise[ii]->Fill(chii.GetPhENoiseAbs());
-        }
+        fHists.hist1f_PhElectrEff     [ii]->Fill(chii.     GetPhE());
+        fHists.hist1f_PhElectrNoise   [ii]->Fill(chii.GetPhENoise());
+        fHists.hist1f_PhElectrAbsEff  [ii]->Fill(chii.     GetPhEAbs());
+        fHists.hist1f_PhElectrAbsNoise[ii]->Fill(chii.GetPhENoiseAbs());
+      }
     }
   }
 }
-
 
   void
 Analyse::PrepareChannelsForAnal()
@@ -383,11 +346,12 @@ Analyse::PrepareChannelsForAnal()
       VPMTChannel& ch=*sig_it->second;
       ch.CalcPedestal();
       ch.SetT0(fTriggerChannels[chan_i/8]->GetT0());
-      ch.FFTLowPass(200);
+      //ch.FFTLowPass(200);
       ch.CalcTimeCharge();
     }
   }
 }
+
   void
 Analyse::Process(std::string infile)
 {

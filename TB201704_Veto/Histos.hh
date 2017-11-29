@@ -2,6 +2,7 @@
 #define _Histos_hh_ 0
 
 #include<sstream>
+#include<string>
 #include<map>
 
 #include"TH1F.h"
@@ -81,6 +82,8 @@ class Histos{
 
     TH2F* hist2f_TimeDiffMaxValue           [fNChanMax][fNChanMax];
     TH2F* hist2f_TimeDiffHalfMaxValue       [fNChanMax][fNChanMax];
+    TH2F* hist2f_TimeDiff02MaxValue         [fNChanMax][fNChanMax];
+    TH2F* hist2f_TimeDiff01MaxValue         [fNChanMax][fNChanMax];
     TH2F* hist2f_TimeDiff2080LeadTrailCros  [fNChanMax][fNChanMax];
     TH2F* hist2f_TimeDiff2080LeadZeroCros   [fNChanMax][fNChanMax];
     TH2F* hist2f_TimeDiff2080Lead50         [fNChanMax][fNChanMax];
@@ -89,6 +92,7 @@ class Histos{
     TH2F* hist2f_TimeDiffMeanTimeAbs        [fNChanMax][fNChanMax];
     TH2F* hist2f_TimeDiffMeanTimeFFT        [fNChanMax][fNChanMax];
     TH2F* hist2f_TimeDiffMeanTimeFFTAbs     [fNChanMax][fNChanMax];
+    TH2F* hist2f_TimeDiffIntegral           [fNChanMax][fNChanMax];
 
     TGraph* graph_AbsSumSamp_Time[fNChanMax];
     TGraph* graph_RMSSamp_Time   [fNChanMax];
@@ -117,6 +121,7 @@ class Histos{
     }
 
     void CreateHistos();
+    void AddToFile(const std::string& dirname, TObject* obj){fAllObj.emplace(dirname,obj);}
     void WriteHistos(){
       TFile* outRootFileP=new TFile(fOutRootFileName.c_str(),"recreate");
       TDirectory* fileDir=outRootFileP;

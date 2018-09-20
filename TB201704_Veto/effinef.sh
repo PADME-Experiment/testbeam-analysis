@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for f in "$@";do
+for f in 613 614 616 617 618 619 621 622 623;do
   i=${f%%-*};
   cat ${i}-effinef.dat|
   awk 'BEGIN{
@@ -15,7 +15,7 @@ for f in "$@";do
     ampl=$2;
     eff=$3;
     ineff=$4;
-    nevt=$5;
+    if($5>5)nevt=$5;
     if(ampl<10){
       e10[ch]=eff;
       n10[ch]=ineff;
@@ -28,7 +28,6 @@ for f in "$@";do
   }
 END{
 for(i=8;i<12;++i){
-  print '$i',i,a[i],100-e[i],n[i],100-e10[i],n10[i]
-};
+  print '$i',i,a[i],100-e[i],n[i],100-e10[i],n10[i], nevt};
 }';
-done |sort -n -k2|awk '{if($2!=a){a=$2;printf(\"\\n\\n%d\\n\",a);};print}' >effinef
+done |sort -n -k2 |awk '{if($2!=a){a=$2;printf("\n\n%d\n",a);};print}' >effinef

@@ -35,6 +35,7 @@ Histos::CreateHistos()
       base="SlopeFitA"            ;name=base+chan_i_s; title=name+" samp 0..995 const;[ADU]"         ; tmptobj=hist1f_ChanSlopeFitA            [board_i][chan_i]=new TH1F(name.c_str(),title.c_str(),400,3500,4000                  ); fAllObj.emplace(base,tmptobj);
       base="SlopeFitB"            ;name=base+chan_i_s; title=name+" samp 0..995 slope;[ADU]"         ; tmptobj=hist1f_ChanSlopeFitB            [board_i][chan_i]=new TH1F(name.c_str(),title.c_str(),400,-.1,.10                    ); fAllObj.emplace(base,tmptobj);
       base="SlopeFitRMS"          ;name=base+chan_i_s; title=name+" samp 0..995;[ADU]"               ; tmptobj=hist1f_ChanSlopeFitRMS          [board_i][chan_i]=new TH1F(name.c_str(),title.c_str(),400,0,200                      ); fAllObj.emplace(base,tmptobj);
+      base="OscCumulative3d"      ;name=base+chan_i_s; title=name+";SamplesT0Cor;Samples"             ; tmptobj=hist3f_ChanOscCum3d             [board_i][chan_i]=new TH3F(name.c_str(),title.c_str(),128,0,1024,128,0,1024,100,3500,4000          ); fAllObj.emplace(base,tmptobj);
       //base="OscCumulative2d"      ;name=base+chan_i_s; title=name+";SamplesT0Cor;Samples"; tmptobj=hist2f_ChanOscCum2d             [board_i][chan_i]=new TH2F(name.c_str(),title.c_str(),128,0,1024,128,0,1024          ); fAllObj.emplace(base,tmptobj);
       //base="MaxAmplFluctuation"   ;name=base+chan_i_s; title=name+";Values [ADU]"        ; tmptobj=hist1f_ChanMaxAmplFluct         [board_i][chan_i]=new TH1F(name.c_str(),title.c_str(),400,0,400                      ); fAllObj.emplace(base,tmptobj);
       //base="SampleBySample"       ;name=base+chan_i_s; title=name+";Samples;Values [ADU]"; tmptobj=hist2f_ChanSampleBySample       [board_i][chan_i]=new TH2F(name.c_str(),title.c_str(),102,0-.5,1024-.5,100,0,400     ); fAllObj.emplace(base,tmptobj);
@@ -62,7 +63,7 @@ Histos::CreateHistos()
         base="SlopeFitA"            ;name=base+trig_i_s; title=name+" samp 0..995 const;[ADU]"          ; tmptobj=hist1f_TrigSlopeFitA            [board_i][trig_i]=new TH1F(name.c_str(),title.c_str(),400,3500,4000                  ); fAllObj.emplace(base,tmptobj);
         base="SlopeFitB"            ;name=base+trig_i_s; title=name+" samp 0..995 slope;[ADU]"          ; tmptobj=hist1f_TrigSlopeFitB            [board_i][trig_i]=new TH1F(name.c_str(),title.c_str(),400,-.1,.10                    ); fAllObj.emplace(base,tmptobj);
         base="SlopeFitRMS"          ;name=base+trig_i_s; title=name+" samp 0..995;[ADU]"                ; tmptobj=hist1f_TrigSlopeFitRMS          [board_i][trig_i]=new TH1F(name.c_str(),title.c_str(),400,0,200                      ); fAllObj.emplace(base,tmptobj);
-      //base="OscCumulative2d"      ;name=base+trig_i_s; title=name+";SamplesT0Cor;Samples"             ; tmptobj=hist2f_TrigOscCum2d             [board_i][trig_i]=new TH2F(name.c_str(),title.c_str(),128,0,1024,128,0,1024          ); fAllObj.emplace(base,tmptobj);
+      //base="OscCumulative3d"      ;name=base+trig_i_s; title=name+";SamplesT0Cor;Samples"             ; tmptobj=hist3f_TrigOscCum3d             [board_i][trig_i]=new TH3F(name.c_str(),title.c_str(),128,0,1024,128,0,1024,100,3500,4000          ); fAllObj.emplace(base,tmptobj);
       //base="MaxAmplFluctuation"   ;name=base+trig_i_s; title=name+";Values [ADU]"                     ; tmptobj=hist1f_TrigMaxAmplFluct         [board_i][trig_i]=new TH1F(name.c_str(),title.c_str(),400,0,400                      ); fAllObj.emplace(base,tmptobj);
       //base="SampleBySample"       ;name=base+trig_i_s; title=name+";Samples;Values [ADU]"             ; tmptobj=hist2f_TrigSampleBySample       [board_i][trig_i]=new TH2F(name.c_str(),title.c_str(),102,0-.5,1024-.5,100,0,400     ); fAllObj.emplace(base,tmptobj);
     }
@@ -75,5 +76,6 @@ Histos::CreateHistos()
     name="TrigSigPedSig" +board_i_s;title=name+" inside evt stability";tmptobj=hist1f_TrigSigPedSig  =new TH1F(name.c_str(),title.c_str(),400,0,10  ); fAllObj.emplace("",tmptobj);
     name="ChanSigPedMean"+board_i_s;title=name+" multi evt stability" ;tmptobj=hist1f_ChanSigPedMean =new TH1F(name.c_str(),title.c_str(),100,0,3   ); fAllObj.emplace("",tmptobj);
     name="ChanSigPedSig" +board_i_s;title=name+" inside evt stability";tmptobj=hist1f_ChanSigPedSig  =new TH1F(name.c_str(),title.c_str(),400,0,10  ); fAllObj.emplace("",tmptobj);
+    name="ChanOscSigY"   +board_i_s;title=name                        ;tmptobj=hist1f_ChanOscSigY    =new TH1F(name.c_str(),title.c_str(),400,0,40  ); fAllObj.emplace("",tmptobj);
 
 }

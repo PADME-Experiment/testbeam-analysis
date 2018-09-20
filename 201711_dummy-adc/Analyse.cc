@@ -101,7 +101,7 @@ Analyse::DummyChannelAnalyse()
     for(int i=0;i<1024;++i){
       fHists.hist2f_ChanOscCum           [0][ch_i]->Fill(i,ch->GetSamp(i));
       fHists.hist2f_ChanOscCumT0         [0][ch_i]->Fill(i,ch->GetSampT0Cor(i));
-      //fHists.hist2f_ChanOscCum2d         [0][ch_i]->Fill(double(ch->CorT0(i)),double(i),ch->GetSamp(i)-ch->GetMean());
+      fHists.hist3f_ChanOscCum3d         [0][ch_i]->Fill(double(ch->CorT0(i)),double(i),ch->GetSamp(i));
       //tmphist.Fill(double(ch->CorT0(i)),double(i));
     }
     //fHists.hist2f_ChanOscCum2d         [0][ch_i]->Divide( fHists.hist2f_ChanOscCum2d         [0][ch_i], &tmphist);
@@ -121,7 +121,7 @@ Analyse::DummyChannelAnalyse()
     ch->Process();
     //TH2F tmphist("tt","",128,0,1024,128,0,1024);
     for(int i=0;i<1024;++i){
-      INFO(std::to_string(double(ch->GetSamp(i))));
+      //INFO(std::to_string(double(ch->GetSamp(i))));
       fHists.hist2f_TrigOscCum           [0][ch_i]->Fill(i,ch->GetSamp(i));
       fHists.hist2f_TrigOscCumT0         [0][ch_i]->Fill(i,ch->GetSampT0Cor(i));
       //fHists.hist2f_TrigOscCum2d         [0][ch_i]->Fill(double(ch->CorT0(i)),double(i),ch->GetSamp(i)-ch->GetMean());
@@ -294,6 +294,7 @@ Analyse::Finalize()
 
       fHists.hist1f_ChanSigPedMean->Fill(fHists.hist1f_ChanPedestalsMean[0][ch_i]->GetRMS());
       fHists.hist1f_ChanSigPedSig ->Fill(fHists.hist1f_ChanPedestalsRMS [0][ch_i]->GetRMS());
+      fHists.hist1f_ChanOscSigY   ->Fill(fHists.hist2f_ChanOscCum       [0][ch_i]->GetRMS(2));
     }
   }
 

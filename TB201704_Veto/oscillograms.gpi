@@ -1,0 +1,38 @@
+#!/bin/gnuplot
+set term pdf enh size 4,3
+set o "run618_triggercumulative_noT0_gnuplot_1.pdf"
+set log cb
+set palette model RGB
+set palette defined (0 "dark-green", 1 "green", 2 "yellow",     3 "dark-yellow",4 "red",        5 "dark-red" )
+unset colorbox
+set grid xtics ytics mytics mxtics  lt 1 lc 0 lw .2, lt 1 dt ".." lw .1 lc 0
+set mytics 10
+set mxtics 10
+set xlab "Time [ns]"
+set ylab "Amplitude [ADC units]"
+p [0:205][500:2500] "run618_triggercumulative_noT0.dat" u (($1-1-floor(($1)/1026)*1026)/5.):(($1)/1026*10000/512-5000):2 w p pt 5 lc palette ps .2 notit
+
+set o "run618_triggercumulative_T0corr_gnuplot_1.pdf"
+set log cb
+set palette model RGB
+set palette defined (0 "dark-green", 1 "green", 2 "yellow",     3 "dark-yellow",4 "red",        5 "dark-red" )
+unset colorbox
+set grid xtics ytics mytics mxtics  lt 1 lc 0 lw .2, lt 1 dt ".." lw .1 lc 0
+set mytics 10
+set mxtics 10
+set xlab "Time [ns]"
+set ylab "Amplitude [ADC units]"
+p [0:205][500:2500] "run618_triggercumulative_T0corr.dat" u (($1-1-floor(($1)/1026)*1026)/5.):(($1)/1026*10000/512-5000):2 w p pt 5 lc palette ps .2 notit
+
+
+set o "run618_ch11cumul.pdf"
+set mytics 4
+set mxtics 10
+set lab at first 450/2./5, -820 center "pedestal\nwindow"  textcolor "magenta"
+set lab at first 1250/2./5, -820 center "signal\nwindow"   textcolor "magenta"
+
+set ylab "Amplitude [mV]"
+p [0:205][-910:]\
+  '<echo -e "50 -4000\n400 -4000\n450 -4000\n800 -4000"' u ($1/5.):2 w i lc "magenta" lw 2 dt 2 notit,\
+ "run618_ch11cumul.dat" u (($1-1-floor(($1)/1026)*1026)/5.):((($1)/1026/512*1.1-1)*1000):2 w p pt 7 lc palette ps .1 notit
+

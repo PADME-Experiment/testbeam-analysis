@@ -1,0 +1,181 @@
+#!/usr/bin/env gnuplot
+
+
+!awk 'BEGIN{FS="[)(,]"}/new TH1F/{bins=$4;lowra=$5;hira=$6;x[1]=0;y[1]=0;yerr[1]=0;i=0;};/SetBinContent/{x[i]=$2*(hira-lowra)/bins+lowra;y[i]=$3;ysum=(ysum>$3?ysum:$3);yerr[i]=sqrt($3);i++;}END{for(p=0;p<i;++p){print x[p],y[p]/ysum,yerr[p]/ysum;}}' run_618_ch16_calo.C >618.dat
+
+
+fn="618.dat"
+g___(x)=a___*exp(-(x-x___)**2/w___)
+
+g0(x)=a0*exp(-(x-x0)**2/2/w0**2);a0=1  ;x0=    -3.55;w0=1.8
+g1(x)=a1*exp(-(x-x1)**2/2/w1**2);a1=.200;x1=1*94-3.55;w1=14#1*23.9+28.8 #*a1
+g2(x)=a2*exp(-(x-x2)**2/2/w2**2);a2=.200;x2=2*94-3.55;w2=19#2*23.9+28.8 #*a2
+g3(x)=a3*exp(-(x-x3)**2/2/w3**2);a3=.200;x3=3*94-3.55;w3=22#3*23.9+28.8 #*a3
+g4(x)=a4*exp(-(x-x4)**2/2/w4**2);a4=.100;x4=4*94-3.55;w4=28#4*23.9+28.8 #*a4
+g5(x)=a5*exp(-(x-x5)**2/2/w5**2);a5=.050;x5=5*94-3.55;w5=30#5*23.9+28.8 #*a5
+g6(x)=a6*exp(-(x-x6)**2/2/w6**2);a6=.015;x6=6*94-3.55;w6=30
+g7(x)=a7*exp(-(x-x7)**2/2/w7**2);a7=.050;x7=7*94-3.55;w7=8
+g8(x)=a8*exp(-(x-x8)**2/2/w8**2);a8=.050;x8=8*94-3.55;w8=8
+g9(x)=a9*exp(-(x-x9)**2/2/w9**2);a9=.030;x9=9*94-3.55;w9=8
+#g6(x)=a6*exp(-(x-x6)**2/w6);a6=.2;x6=;w6=
+#g7(x)=a7*exp(-(x-x7)**2/w7);a7=.2;x7=;w7=
+GC(x)=g0(x)+g1(x)+g2(x)+g3(x)+g4(x)+g5(x)+g6(x)#+g7(x)#+g8(x)#+g9(x)
+
+fit GC(x) fn u 1:2:3 via \
+a0,x0,w0,\
+a1,x1,w1,\
+a2,x2,w2,\
+a3,x3,w3,\
+a4,x4,w4,\
+a5,x5,w5
+fit GC(x) fn via  x6
+fit GC(x) fn via  w6
+fit GC(x) fn via  a6
+fit GC(x) fn u 1:2:3 via \
+a0,x0,w0,\
+a1,x1,w1,\
+a2,x2,w2,\
+a3,x3,w3,\
+a4,x4,w4,\
+a5,x5,w5
+
+       print ""
+       print ""
+       print ""
+       print ""
+       print ""
+print 0,a0,a0_err,x0,x0_err,w0,w0_err
+print 1,a1,a1_err,x1,x1_err,w1,w1_err
+print 2,a2,a2_err,x2,x2_err,w2,w2_err
+print 3,a3,a3_err,x3,x3_err,w3,w3_err
+print 4,a4,a4_err,x4,x4_err,w4,w4_err
+print 5,a5,a5_err,x5,x5_err,w5,w5_err
+
+       print ""
+       print ""
+print 0,a0,x0,w0
+print 1,a1,x1,w1
+print 2,a2,x2,w2
+print 3,a3,x3,w3
+print 4,a4,x4,w4
+print 5,a5,x5,w5
+       print ""
+       print ""
+       print ""
+print sprintf("(-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xL)/sqrt(2)/%f)*%f",a0,x0,w0,w0),\
+       sprintf("-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xL)/sqrt(2)/%f)*%f",a1,x1,w1,w1),\
+       sprintf("-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xL)/sqrt(2)/%f)*%f",a2,x2,w2,w2),\
+       sprintf("-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xL)/sqrt(2)/%f)*%f",a3,x3,w3,w3),\
+       sprintf("-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xL)/sqrt(2)/%f)*%f",a4,x4,w4,w4),\
+       sprintf("-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xL)/sqrt(2)/%f)*%f)-",a5,x5,w5,w5),\
+      sprintf("(-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xR)/sqrt(2)/%f)*%f",a0,x0,w0,w0),\
+       sprintf("-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xR)/sqrt(2)/%f)*%f",a1,x1,w1,w1),\
+       sprintf("-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xR)/sqrt(2)/%f)*%f",a2,x2,w2,w2),\
+       sprintf("-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xR)/sqrt(2)/%f)*%f",a3,x3,w3,w3),\
+       sprintf("-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xR)/sqrt(2)/%f)*%f",a4,x4,w4,w4),\
+       sprintf("-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xR)/sqrt(2)/%f)*%f)",a5,x5,w5,w5)
+       print ""
+       print ""
+       print ""
+       print ""
+       print ""
+print sprintf("(-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xL)/sqrt(2)/%f)*%f",a0,x0,w0,w0),\
+       sprintf("-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xL)/sqrt(2)/%f)*%f",a2,x2,w2,w2),\
+       sprintf("-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xL)/sqrt(2)/%f)*%f",a3,x3,w3,w3),\
+       sprintf("-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xL)/sqrt(2)/%f)*%f",a4,x4,w4,w4),\
+       sprintf("-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xL)/sqrt(2)/%f)*%f)-",a5,x5,w5,w5),\
+      sprintf("(-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xR)/sqrt(2)/%f)*%f",a0,x0,w0,w0),\
+       sprintf("-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xR)/sqrt(2)/%f)*%f",a2,x2,w2,w2),\
+       sprintf("-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xR)/sqrt(2)/%f)*%f",a3,x3,w3,w3),\
+       sprintf("-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xR)/sqrt(2)/%f)*%f",a4,x4,w4,w4),\
+       sprintf("-sqrt(3.1415928)/sqrt(2)*%f*erf((%f-xR)/sqrt(2)/%f)*%f)",a5,x5,w5,w5)
+       print ""
+       print ""
+       print ""
+       print ""
+       print ""
+
+
+
+print sprintf("%f*exp(-(%f-x)**2/2/%f**2)+",a0,x0,w0),\
+      sprintf("%f*exp(-(%f-x)**2/2/%f**2)+",a1,x1,w1),\
+      sprintf("%f*exp(-(%f-x)**2/2/%f**2)+",a2,x2,w2),\
+      sprintf("%f*exp(-(%f-x)**2/2/%f**2)+",a3,x3,w3),\
+      sprintf("%f*exp(-(%f-x)**2/2/%f**2)+",a4,x4,w4),\
+      sprintf("%f*exp(-(%f-x)**2/2/%f**2) ",a5,x5,w5)
+
+
+#print 6,a6,a6_err,x6,x6_err,w6,w6_err
+#print 7,a7,a7_err,x7,x7_err,w7,w7_err
+#print 8,a8,a8_err,x8,x8_err,w8,w8_err
+#print 9,a9,a9_err,x9,x9_err,w9,w9_err
+
+
+
+#set label center at first x0+14,graph .7 sprintf("a=%5.3F\nσa=%5.3F\nx=%5.3F\nσx=%5.3F\nw=%5.3F\nσw=%5.3F\n",a0,a0_err,x0,x0_err,w0,w0_err) tc ls 3
+
+
+#set label center at graph .18,graph .95 sprintf("a_1=%4.2F\nσa_1=%4.2F\nx_1=%4.2F\nσx_1=%4.2F\nw_1=%4.2F\nσw_1=%4.2F\n",a1,a1_err,x1,x1_err,w1,w1_err) tc ls 4 boxed
+#set label center at graph .4,graph .95 sprintf("a_2=%4.2F\nσa_2=%4.2F\nx_2=%4.2F\nσx_2=%4.2F\nw_2=%4.2F\nσw_2=%4.2F\n",a2,a2_err,x2,x2_err,w2,w2_err) tc ls 5 boxed
+#set label center at graph .62,graph .95 sprintf("a_3=%4.2F\nσa_3=%4.2F\nx_3=%4.2F\nσx_3=%4.2F\nw_3=%4.2F\nσw_3=%4.2F\n",a3,a3_err,x3,x3_err,w3,w3_err) tc ls 6 boxed
+
+#set label center at graph .15,graph .92 sprintf("a_1=%4.2F\nx_1=%4.2F\nw_1=%4.2F",a1,x1,w1) tc ls 4 boxed
+set label center at graph .15,graph .92 sprintf("a_0=%4.2F\nx_0=%4.2F\nw_0=%4.2F",a0,x0,w0) tc ls 3 boxed
+set label center at graph .36,graph .92 sprintf("a_1=%4.2F\nx_1=%4.2F\nw_1=%4.2F",a1,x1,w1) tc ls 4 boxed
+set label center at graph .58,graph .92 sprintf("a_2=%4.2F\nx_2=%4.2F\nw_2=%4.2F",a2,x2,w2) tc ls 5 boxed
+#set label center at first x4,graph .9 sprintf("a=%5.3F\nσa=%5.3F\nx=%5.3F\nσx=%5.3F\nw=%5.3F\nσw=%5.3F\n",a4,a4_err,x4,x4_err,w4,w4_err) tc ls 7
+#set label center at first x5,graph .9 sprintf("a=%5.3F\nσa=%5.3F\nx=%5.3F\nσx=%5.3F\nw=%5.3F\nσw=%5.3F\n",a5,a5_err,x5,x5_err,w5,w5_err) tc ls 8
+#set label center at first x6,graph .9 sprintf("a=%5.3F\nσa=%5.3F\nx=%5.3F\nσx=%5.3F\nw=%5.3F\nσw=%5.3F\n",a6,a6_err,x6,x6_err,w6,w6_err) tc ls 9
+#set label center at first x7,graph .9 sprintf("a=%5.3F\nσa=%5.3F\nx=%5.3F\nσx=%5.3F\nw=%5.3F\nσw=%5.3F\n",a7,a7_err,x7,x7_err,w7,w7_err) tc ls 10
+#set label center at first x8,graph .9 sprintf("a=%5.3F\nσa=%5.3F\nx=%5.3F\nσx=%5.3F\nw=%5.3F\nσw=%5.3F\n",a8,a8_err,x8,x8_err,w8,w8_err) tc ls 11
+
+#set label center at first x9,graph .9 sprintf("a=%5.3F\nσa=%5.3F\nx=%5.3F\nσx=%5.3F\nw=%5.3F\nσw=%5.3F\n",a9,a9_err,x9,x9_err,w9,w9_err) tc ls 12
+
+
+
+
+
+
+
+
+set term pdf enh size 4,3
+set o "618-btfcalo-distr.pdf"
+
+set key right #center
+set label at graph .3,.7 "g_i=a_i*e^{-(x-x_i)^2/2w_i^2}\nGC=∑g_i"
+
+#set title "Energy deposit distribution for run 618 BTF calorimeter \\\@1000V";
+set xla "Energy deposit[Ch]"
+set yla "Count"
+set log y
+set samp 1000
+
+p [-20:420] [0.01:1.05] \
+GC(x>63.5?x<123.5?x:0/0:0/0) w filledcurve y1=0 fillstyle pattern 2 noti,\
+fn w yerr tit "Exp" lt 1,\
+GC(x) lt 2,\
+g0(x) lt 3,\
+g1(x) lt 4,\
+g2(x) lt 5,\
+g3(x) lt 6,\
+g4(x) lt 7,\
+g5(x) lt 8,\
+g6(x) lt 9#,g7(x),g8(x) #,g9(x)
+
+
+
+
+
+reset
+set grid
+#set term pdf enh size 4,4
+set o "618-btfcalo-linearity.pdf"
+set xla "n electrons";
+set yla "X_0 pos";
+#set title "X-param of gaussian fit run 618 BTF calorimeter \\\@1000V";
+set xti 1;
+set key Left left;
+fit a*x+b "wpos.dat" u 1:4:5 via a,b
+set label at graph .02,.85 sprintf("a=%f+-%f\nb=%f+-%f",a,a_err,b,b_err);
+p [-.5:8.5] "wpos.dat" u 1:4:5 w yerr, a*x+b
+

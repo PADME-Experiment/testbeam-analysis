@@ -33,7 +33,7 @@ Histos::CreateHistos()
     tmptobj=hist2f_OscCum[ii]=new TH2F(name.c_str(),title.c_str(),1024,-.5,1023.5, 2048,-1,.1) ;
     fAllObj.emplace("SigCumOsc",tmptobj);
     name="CumulativeOscillogramT0Fixed_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
-    tmptobj=hist2f_OscCumT0Fixed[ii]=new TH2F(name.c_str(),title.c_str(),1024,-.5,1023.5, 512,-1,.1) ;
+    tmptobj=hist2f_OscCumT0Fixed[ii]=new TH2F(name.c_str(),title.c_str(),1024,-.5,1023.5, 4096,-1,.1) ;
     fAllObj.emplace("SigCumOscT0",tmptobj);
     name="Pedestals_ch_"+chan_i_ss.str();  title=name+" "+uni.GetROName(ii);
     tmptobj=hist1f_Pedestals[ii]=new TH1F(name.c_str(),title.c_str(),500,3500-.5,4000-.5);

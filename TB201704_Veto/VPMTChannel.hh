@@ -11,12 +11,12 @@ class VPMTChannel:public VSamplingChannel{
       fSignalRangeBegin  (0),
       fSignalRangeEnd    (0),
       fNoiseRangeBegin   (50),
-      fNoiseRangeEnd     (51),
+      fNoiseRangeEnd     (49),
       fPedestalRangeBegin(30),
-      fPedestalRangeEnd  (250) {}
+      fPedestalRangeEnd  (100) {}
     virtual ~VPMTChannel(){}
   public:
-    bool IsFired()const{return fPhE>fFireThreshold;}
+    bool IsFired()const{return fPhEAbs>fFireThreshold;}
     void CalcPedestal();
 
     Short_t GetPedestal()const{return fPedestal;}
@@ -44,8 +44,8 @@ class VPMTChannel:public VSamplingChannel{
     double  GetTimeMeanLowPass   ()const{return fTimeMeanLowPass;   }
     double  GetPhELowPass        ()const{return fPhELowPass;        }
     double  GetPhEAbsLowPass     ()const{return fPhEAbsLowPass;     }
-    bool    IsSinglePartBeam         ()const{return fOneParticleRangeBegin<fPhE&&fPhE<fOneParticleRangeEnd;}
-    bool    IsDoublePartBeam         ()const{return fTwoParticleRangeBegin<fPhE&&fPhE<fTwoParticleRangeEnd;}
+    bool    IsSinglePartBeam     ()const{return fOneParticleRangeBegin<fPhEAbs&&fPhEAbs<fOneParticleRangeEnd;}
+    bool    IsDoublePartBeam     ()const{return fTwoParticleRangeBegin<fPhEAbs&&fPhEAbs<fTwoParticleRangeEnd;}
 
     double GetPhE        ()const{return fPhE;}
     double GetPhEAbs     ()const{return fPhEAbs;}

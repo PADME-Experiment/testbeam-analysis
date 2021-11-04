@@ -4,25 +4,25 @@
 class BTFCalorimeterChannel:public VCalorimeterChannel{
   public:
     BTFCalorimeterChannel(){
-      fGain=6.009615;
+      fGain=2.5;//6.009615;
 
-      fSignalRangeBegin  =450;
-      fSignalRangeEnd    =700;
-      fNoiseRangeBegin=100;
-      fNoiseRangeEnd=350;
-      fPedestalRangeBegin=100;
-      fPedestalRangeEnd  =350;
+      fSignalRangeBegin  =500;//450;
+      fSignalRangeEnd    =660;//700;
+      fNoiseRangeBegin   =100;
+      fNoiseRangeEnd     =360;
+      //fPedestalRangeBegin=100;
+      //fPedestalRangeEnd  =350;
 
 
 
       //fSignalRangeBegin  =430;
       //fSignalRangeEnd    =600;
       //fNoiseRangeEnd     =fNoiseRangeBegin+fSignalRangeEnd-fSignalRangeBegin;
-      fOneParticleRangeBegin=62;//50-12;
-      fOneParticleRangeEnd  =115;//50+12;
-      fTwoParticleRangeBegin=180;
-      fTwoParticleRangeEnd  =250;
-      fFireThreshold=32;
+      fOneParticleRangeBegin=80;//50-12;
+      fOneParticleRangeEnd  =290;//50+12;
+      fTwoParticleRangeBegin=350;
+      fTwoParticleRangeEnd  =520;
+      fFireThreshold=50;
     }
     void SetVoltage(unsigned v){
       switch (v){

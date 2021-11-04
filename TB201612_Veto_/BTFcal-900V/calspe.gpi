@@ -1,0 +1,109 @@
+#!/usr/bin/env gnuplot
+fn="579.calc_spe_abs.dat"
+g___(x)=a___*exp(-(x-x___)**2/w___)
+
+g0(x)=a0*exp(-(x-x0)**2/2/w0**2);a0=1  ;x0=        3.55;w0=1.8
+g1(x)=a1*exp(-(x-x1)**2/2/w1**2);a1=.2 ;x1=1*47.62+3.55;w1=8#1*23.9+28.8 #*a1
+g2(x)=a2*exp(-(x-x2)**2/2/w2**2);a2=.25;x2=2*47.62+3.55;w2=8#2*23.9+28.8 #*a2
+g3(x)=a3*exp(-(x-x3)**2/2/w3**2);a3=.22;x3=3*47.62+3.55;w3=8#3*23.9+28.8 #*a3
+g4(x)=a4*exp(-(x-x4)**2/2/w4**2);a4=.18;x4=4*47.62+3.55;w4=8#4*23.9+28.8 #*a4
+g5(x)=a5*exp(-(x-x5)**2/2/w5**2);a5=.1 ;x5=5*47.62+3.55;w5=8#5*23.9+28.8 #*a5
+g6(x)=a6*exp(-(x-x6)**2/2/w6**2);a6=.1 ;x6=6*47.62+3.55;w6=8
+g7(x)=a7*exp(-(x-x7)**2/2/w7**2);a7=.1 ;x7=7*47.62+3.55;w7=8
+g8(x)=a8*exp(-(x-x8)**2/2/w8**2);a8=.1 ;x8=8*47.62+3.55;w8=8
+g9(x)=a9*exp(-(x-x9)**2/2/w9**2);a9=.1 ;x9=9*47.62+3.55;w9=8
+#g6(x)=a6*exp(-(x-x6)**2/w6);a6=.2;x6=;w6=
+#g7(x)=a7*exp(-(x-x7)**2/w7);a7=.2;x7=;w7=
+GC(x)=g0(x)+g1(x)+g2(x)+g3(x)+g4(x)+g5(x)+g6(x)+g7(x)+g8(x)+g9(x)
+
+fit GC(x) fn via \
+a0,x0,w0,\
+a1,x1,w1,\
+a2,x2,w2,\
+a3,x3,w3,\
+a4,x4,w4,\
+a5,x5,w5,\
+a6,x6,w6,\
+a7,x7,w7,\
+a8,x8,w8,\
+a9,w9
+fit GC(x) fn via \
+a7,x7,w7,\
+a8,x8,w8,\
+a9,x9,w9
+fit GC(x) fn via \
+a0,x0,w0,\
+a1,x1,w1,\
+a2,x2,w2,\
+a3,x3,w3,\
+a4,x4,w4,\
+a5,x5,w5,\
+a6,x6,w6,\
+a7,x7,w7,\
+a8,x8,w8,\
+a9,x9,w9
+
+print 0,a0,a0_err,x0,x0_err,w0,w0_err
+print 1,a1,a1_err,x1,x1_err,w1,w1_err
+print 2,a2,a2_err,x2,x2_err,w2,w2_err
+print 3,a3,a3_err,x3,x3_err,w3,w3_err
+print 4,a4,a4_err,x4,x4_err,w4,w4_err
+print 5,a5,a5_err,x5,x5_err,w5,w5_err
+print 6,a6,a6_err,x6,x6_err,w6,w6_err
+print 7,a7,a7_err,x7,x7_err,w7,w7_err
+print 8,a8,a8_err,x8,x8_err,w8,w8_err
+print 9,a9,a9_err,x9,x9_err,w9,w9_err
+
+
+
+set label center at first x0+14,graph .7 sprintf("a=%5.3F\nσa=%5.3F\nx=%5.3F\nσx=%5.3F\nw=%5.3F\nσw=%5.3F\n",a0,a0_err,x0,x0_err,w0,w0_err) tc ls 3
+set label center at first x1,graph .9 sprintf("a=%5.3F\nσa=%5.3F\nx=%5.3F\nσx=%5.3F\nw=%5.3F\nσw=%5.3F\n",a1,a1_err,x1,x1_err,w1,w1_err) tc ls 4
+set label center at first x2,graph .9 sprintf("a=%5.3F\nσa=%5.3F\nx=%5.3F\nσx=%5.3F\nw=%5.3F\nσw=%5.3F\n",a2,a2_err,x2,x2_err,w2,w2_err) tc ls 5
+set label center at first x3,graph .9 sprintf("a=%5.3F\nσa=%5.3F\nx=%5.3F\nσx=%5.3F\nw=%5.3F\nσw=%5.3F\n",a3,a3_err,x3,x3_err,w3,w3_err) tc ls 6
+set label center at first x4,graph .9 sprintf("a=%5.3F\nσa=%5.3F\nx=%5.3F\nσx=%5.3F\nw=%5.3F\nσw=%5.3F\n",a4,a4_err,x4,x4_err,w4,w4_err) tc ls 7
+set label center at first x5,graph .9 sprintf("a=%5.3F\nσa=%5.3F\nx=%5.3F\nσx=%5.3F\nw=%5.3F\nσw=%5.3F\n",a5,a5_err,x5,x5_err,w5,w5_err) tc ls 8
+set label center at first x6,graph .9 sprintf("a=%5.3F\nσa=%5.3F\nx=%5.3F\nσx=%5.3F\nw=%5.3F\nσw=%5.3F\n",a6,a6_err,x6,x6_err,w6,w6_err) tc ls 9
+set label center at first x7,graph .9 sprintf("a=%5.3F\nσa=%5.3F\nx=%5.3F\nσx=%5.3F\nw=%5.3F\nσw=%5.3F\n",a7,a7_err,x7,x7_err,w7,w7_err) tc ls 10
+set label center at first x8,graph .9 sprintf("a=%5.3F\nσa=%5.3F\nx=%5.3F\nσx=%5.3F\nw=%5.3F\nσw=%5.3F\n",a8,a8_err,x8,x8_err,w8,w8_err) tc ls 11
+
+#set label center at first x9,graph .9 sprintf("a=%5.3F\nσa=%5.3F\nx=%5.3F\nσx=%5.3F\nw=%5.3F\nσw=%5.3F\n",a9,a9_err,x9,x9_err,w9,w9_err) tc ls 12
+
+
+
+
+
+
+
+
+set term pdf enh size 8,4
+set o "579-btfcalo-distr.pdf"
+
+set key right center
+set label at graph .65,.6 "g_i=a_i*e^{-(x-x5)^2/2w_i^2}\nGC=∑g_i"
+
+set title "Energy deposit distribution for run 579 BTF calorimeter \\\@900V";
+set xla "Energy deposit[Ch]"
+set yla "Count"
+set log y
+set samp 1000
+p [0:420] [0.01:1.05] fn w yerr, GC(x),g0(x),g1(x),g2(x),g3(x),g4(x),g5(x),g6(x),g7(x),g8(x) #,g9(x)
+
+
+
+
+pause -1
+
+reset
+set grid
+set term pdf enh size 4,4
+set o "579-btfcalo-linearity.pdf"
+set xla "nPhE";
+set yla "X_0 pos";
+set title "X-param of gaussian fit run 579 BTF calorimeter \\\@900V";
+set xti 1;
+set key Left left;
+fit a*x+b "wpos.dat" u 1:4:5 via a,b
+set label at graph .02,.85 sprintf("a=%f+-%f\nb=%f+-%f",a,a_err,b,b_err);
+p [-.5:8.5] "wpos.dat" u 1:4:5 w yerr, a*x+b
+
+pause -1

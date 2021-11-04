@@ -50,7 +50,7 @@ p \
 
 
 set term pdf enh size 4,3
-set o "timedef-comp.pdf"
+set o "timedef-comp_1.pdf"
 
 set xla "Beam position starting from SiPM [mm]"
 
@@ -75,7 +75,7 @@ x==10?"Max*10%":\
 x==11?"Max*20%":\
 "NONE")
 
-set yla "σ(t_{Ch.7}-t_{Ch.11})/√2"
+set yla "σ(t_{Ch.7}-t_{Ch.11})/√2 [ns]"
 
 set key top right Right outside horizontal  samplen 1.5
 
@@ -83,7 +83,7 @@ set xla "Beam position starting from SiPM [mm]"
 
 p \
     for [col in "10 11 2 1 4 5 3 6 8 7 9"] datfile u ($1==chan?runN_pos($24):0/0):(column(col*2)/sqrt(2)):(column(col*2+1)/sqrt(2))  w yerr lt col title timedefnames(col),\
-    for [col in "10 11 2 1 4 5 3 6 8 7 9"] datfile u ($1==chan?runN_pos($24):0/0):(column(col*2)/sqrt(2)):(column(col*2+1)/sqrt(2))  w l    lt col notitle
+    for [col in "10 11 2 1 4 5 3 6 8 7 9"] datfile u ($1==chan?runN_pos($24):0/0):(column(col*2)/sqrt(2)):(column(col*2+1)/sqrt(2))  w l   dt 2 lt col notitle
 
 
 set o
@@ -91,14 +91,19 @@ reset
 set grid
 set xla "Beam position starting from SiPM [mm]"
 set term pdf enh size 4,3
-set o "timeres-summary.pdf"
-set key bottom right
+set o "timeres-summary_1.pdf"
+set key bottom right Left width -6
 set yra [.25:0.9]
-set yla "σ(t_{Ch.X}-t_{Ch.Y})/√2"
+set yra [.35:0.85]
+set yla "σ(t_{Ch.X}-t_{Ch.Y})/√2 [ns]"
 set notitle
 #set tit "Time resolution comparison for different scintillator types"
 p \
-    for [col=2:2] datfile u ($1==4?runN_pos($24):0/0):(column(col*2)/sqrt(2)):(column(col*2+1)/sqrt(2))  w yerr lw 2 ti "Ch.4 - Ch.8",\
-    for [col=2:2] datfile u ($1==5?runN_pos($24):0/0):(column(col*2)/sqrt(2)):(column(col*2+1)/sqrt(2))  w yerr lw 2 ti "Ch.5 - Ch.9",\
-    for [col=2:2] datfile u ($1==6?runN_pos($24):0/0):(column(col*2)/sqrt(2)):(column(col*2+1)/sqrt(2))  w yerr lw 2 ti "Ch.6 - Ch.10",\
-    for [col=2:2] datfile u ($1==7?runN_pos($24):0/0):(column(col*2)/sqrt(2)):(column(col*2+1)/sqrt(2))  w yerr lw 2 ti "Ch.7 - Ch.11"
+    for [col=2:2] datfile u ($1==4?runN_pos($24):0/0):(column(col*2)/sqrt(2)):(column(col*2+1)/sqrt(2))  w yerr   lt 1 lw 2 ti "Ch.4 - Ch.8: no fibre",\
+    for [col=2:2] datfile u ($1==5?runN_pos($24):0/0):(column(col*2)/sqrt(2)):(column(col*2+1)/sqrt(2))  w yerr   lt 2 lw 2 ti "Ch.5 - Ch.9: fibre+scint Al",\
+    for [col=2:2] datfile u ($1==6?runN_pos($24):0/0):(column(col*2)/sqrt(2)):(column(col*2+1)/sqrt(2))  w yerr   lt 3 lw 2 ti "Ch.6 - Ch.10: no fibre",\
+    for [col=2:2] datfile u ($1==7?runN_pos($24):0/0):(column(col*2)/sqrt(2)):(column(col*2+1)/sqrt(2))  w yerr   lt 4 lw 2 ti "Ch.7 - Ch.11: fibre+scint",\
+    for [col=2:2] datfile u ($1==4?runN_pos($24):0/0):(column(col*2)/sqrt(2)):(column(col*2+1)/sqrt(2))  w l dt 2 lt 1 lw 2 notit,\
+    for [col=2:2] datfile u ($1==5?runN_pos($24):0/0):(column(col*2)/sqrt(2)):(column(col*2+1)/sqrt(2))  w l dt 2 lt 2 lw 2 notit,\
+    for [col=2:2] datfile u ($1==6?runN_pos($24):0/0):(column(col*2)/sqrt(2)):(column(col*2+1)/sqrt(2))  w l dt 2 lt 3 lw 2 notit,\
+    for [col=2:2] datfile u ($1==7?runN_pos($24):0/0):(column(col*2)/sqrt(2)):(column(col*2+1)/sqrt(2))  w l dt 2 lt 4 lw 2 notit

@@ -7,6 +7,7 @@
 
 #include"TH1F.h"
 #include"TH2F.h"
+#include"TH3F.h"
 #include"TGraph.h"
 #include"TFile.h"
 #include"TDirectory.h"
@@ -24,6 +25,7 @@ class Histos{
    TH1F* hist1f_TrigSigPedSig ;
    TH1F* hist1f_ChanSigPedMean;
    TH1F* hist1f_ChanSigPedSig ;
+   TH1F* hist1f_ChanOscSigY;
     TH2F* hist2f_ChanOscCum           [fNBoards][fNChanMax];
     TH2F* hist2f_ChanOscCumT0         [fNBoards][fNChanMax];
     TH1F* hist1f_ChanSigmaSampBySamp  [fNBoards][fNChanMax];
@@ -35,7 +37,7 @@ class Histos{
     TH1F* hist1f_ChanSlopeFitA        [fNBoards][fNChanMax];
     TH1F* hist1f_ChanSlopeFitB        [fNBoards][fNChanMax];
     TH1F* hist1f_ChanSlopeFitRMS      [fNBoards][fNChanMax];
-    //TH2F* hist2f_ChanOscCum2d         [fNBoards][fNChanMax];
+    TH3F* hist3f_ChanOscCum3d         [fNBoards][fNChanMax];
     //TH1F* hist1f_ChanMaxAmplFluct     [fNBoards][fNChanMax];
     //TH2F* hist2f_ChanSampleBySample   [fNBoards][fNChanMax];
 

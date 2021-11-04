@@ -2,6 +2,7 @@
 #filename=
 set term png size 1280,800
 set term pdf size 12,8
+print(datfile)
 set o sprintf("%s.pdf",datfile);
 set  log y
 set grid xtics ytics mytics

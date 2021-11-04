@@ -5,14 +5,14 @@ class SiPM:public VPMTChannel{
   public:
     SiPM(){
       fType="SiPM";
-      fGain=25;//11.6; //E5
+      fGain=25;//overwiritten in Analyse.cc
       fFireThreshold=26;//7;
       fSignalRangeBegin  =450;
       fSignalRangeEnd    =800;
-      fNoiseRangeBegin=50;
-      fNoiseRangeEnd=400;
-      fPedestalRangeBegin=50;
-      fPedestalRangeEnd  =400;
+      fNoiseRangeBegin   =100;
+      fNoiseRangeEnd     =450;
+      //fPedestalRangeBegin=50;
+      //fPedestalRangeEnd  =400;
       //fNoiseRangeEnd     =fNoiseRangeBegin+fSignalRangeEnd-fSignalRangeBegin;
     }
 };

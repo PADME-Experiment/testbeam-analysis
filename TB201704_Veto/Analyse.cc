@@ -49,19 +49,19 @@ Analyse::HWInit()
   fTriggerChannels[2]->SetName("Trig3");
   fTriggerChannels[3]->SetName("Trig4");
 
-  fSignalChannels [Universe::eROCh::eB1S1    ]->SetGain(4*5.15);
+  fSignalChannels [Universe::eROCh::eB1S1    ]->SetGain(4*5.15); //brd 5 cbl 3
   fSignalChannels [Universe::eROCh::eB1S2    ]->SetGain(4*5.15);
   fSignalChannels [Universe::eROCh::eB1S3    ]->SetGain(4*5.15);
   fSignalChannels [Universe::eROCh::eB1S4    ]->SetGain(4*5.15);
-  fSignalChannels [Universe::eROCh::eB2S1    ]->SetGain(4*5.15);
+  fSignalChannels [Universe::eROCh::eB2S1    ]->SetGain(4*5.15); //brd 3 cbl 4
   fSignalChannels [Universe::eROCh::eB2S2    ]->SetGain(4*5.15);
   fSignalChannels [Universe::eROCh::eB2S3    ]->SetGain(4*5.15);
   fSignalChannels [Universe::eROCh::eB2S4    ]->SetGain(4*5.15);
-  fSignalChannels [Universe::eROCh::eB3S1    ]->SetGain(4*5.15);
+  fSignalChannels [Universe::eROCh::eB3S1    ]->SetGain(4*5.15); //brd 4 cbl 1
   fSignalChannels [Universe::eROCh::eB3S2    ]->SetGain(4*5.15);
   fSignalChannels [Universe::eROCh::eB3S3    ]->SetGain(4*5.15);
   fSignalChannels [Universe::eROCh::eB3S4    ]->SetGain(4*5.15);
-  fSignalChannels [Universe::eROCh::eB4S1    ]->SetGain(4*2.31);
+  fSignalChannels [Universe::eROCh::eB4S1    ]->SetGain(4*2.31); //brd 1 cbl 2
   fSignalChannels [Universe::eROCh::eB4S2    ]->SetGain(4*2.31);
   fSignalChannels [Universe::eROCh::eB4S3    ]->SetGain(4*2.31);
   fSignalChannels [Universe::eROCh::eB4S4    ]->SetGain(4*2.31);
@@ -82,8 +82,9 @@ Analyse::HWDestr()
 Analyse::FillOscCumulatives()
 {
   if(!fSignalChannels[Universe::eROCh::eBTFCalo]->IsFired())return;
+  if(!fSignalChannels[Universe::eROCh::eBTFCalo]->IsSinglePartBeam())return;
   static int nfilled=0;
-  if(nfilled++>100000)return;
+  if(nfilled++>10000)return;
 #pragma omp parallel
   for(auto sig_it=fSignalChannels.begin();sig_it!=fSignalChannels.end();++sig_it){
 #pragma omp single nowait
@@ -227,18 +228,19 @@ Analyse::FillPhEDistr()
       fSignalChannels[(Universe::eROCh) 8]->GetPhE(),
     };
     if(
-        ( // at least 3 of 4 scintillators are fired
+        ( // at least 2 of 4 scintillators are fired,
+          // because the scintillator only readout is weak
          (fSignalChannels[(Universe::eROCh) 4]->IsFired()?1:0)+
          (fSignalChannels[(Universe::eROCh) 5]->IsFired()?1:0)+
          (fSignalChannels[(Universe::eROCh) 6]->IsFired()?1:0)+
          (fSignalChannels[(Universe::eROCh) 7]->IsFired()?1:0)
-        )>3&&
+        )>=2&&
         (
          (fSignalChannels[(Universe::eROCh)12]->IsFired()?1:0)+
          (fSignalChannels[(Universe::eROCh)13]->IsFired()?1:0)+
          (fSignalChannels[(Universe::eROCh)14]->IsFired()?1:0)+
          (fSignalChannels[(Universe::eROCh)15]->IsFired()?1:0)
-        )>3
+        )>=2
       ){
       int i=0;
       fHists.hist1f_lightCollectRto[i]->Fill((b[i]<1e-8?0:log(b[i]))-(a[i]<1e-8?0:log(a[i])));i++;
@@ -314,17 +316,17 @@ Analyse::FillHistos()
       int ii=int(sigii_it->first);
       if(true
           &&( // at least 2 of 4 scintillators are fired
-            (fSignalChannels[(Universe::eROCh) 4]->IsFired()?1:0)+
-            (fSignalChannels[(Universe::eROCh) 5]->IsFired()?1:0)+
-            (fSignalChannels[(Universe::eROCh) 6]->IsFired()?1:0)+
-            (fSignalChannels[(Universe::eROCh) 7]->IsFired()?1:0)
-            )>2
+            (fSignalChannels[(Universe::eROCh) 0]->IsFired()?1:0)+
+            (fSignalChannels[(Universe::eROCh) 1]->IsFired()?1:0)+
+            (fSignalChannels[(Universe::eROCh) 2]->IsFired()?1:0)+
+            (fSignalChannels[(Universe::eROCh) 3]->IsFired()?1:0)
+            )>=2
           &&(
             (fSignalChannels[(Universe::eROCh)12]->IsFired()?1:0)+
             (fSignalChannels[(Universe::eROCh)13]->IsFired()?1:0)+
             (fSignalChannels[(Universe::eROCh)14]->IsFired()?1:0)+
             (fSignalChannels[(Universe::eROCh)15]->IsFired()?1:0)
-            )>2
+            )>=2
         ){
         fHists.hist1f_PhElectrEff     [ii]->Fill(chii.     GetPhE());
         fHists.hist1f_PhElectrNoise   [ii]->Fill(chii.GetPhENoise());

@@ -33,18 +33,19 @@ Universe::LinksNames()
   fLinkRO2DetCh[eROCh::eBTFCalo ]=eDetCh::eBTFCalo;
 
 
-  fROChNames[eROCh::eB1S1    ]="Board4Cbl1SiPM1";
-  fROChNames[eROCh::eB1S2    ]="Board4Cbl1SiPM2";
-  fROChNames[eROCh::eB1S3    ]="Board4Cbl1SiPM3";
-  fROChNames[eROCh::eB1S4    ]="Board4Cbl1SiPM4";
+  // upstream
+  fROChNames[eROCh::eB1S1    ]="Board5Cbl3SiPM1";
+  fROChNames[eROCh::eB1S2    ]="Board5Cbl3SiPM2";
+  fROChNames[eROCh::eB1S3    ]="Board5Cbl3SiPM3";
+  fROChNames[eROCh::eB1S4    ]="Board5Cbl3SiPM4";
   fROChNames[eROCh::eB2S1    ]="Board3Cbl4SiPM1";
   fROChNames[eROCh::eB2S2    ]="Board3Cbl4SiPM2";
   fROChNames[eROCh::eB2S3    ]="Board3Cbl4SiPM3";
   fROChNames[eROCh::eB2S4    ]="Board3Cbl4SiPM4";
-  fROChNames[eROCh::eB3S1    ]="Board5Cbl3SiPM1";
-  fROChNames[eROCh::eB3S2    ]="Board5Cbl3SiPM2";
-  fROChNames[eROCh::eB3S3    ]="Board5Cbl3SiPM3";
-  fROChNames[eROCh::eB3S4    ]="Board5Cbl3SiPM4";
+  fROChNames[eROCh::eB3S1    ]="Board4Cbl1SiPM1";
+  fROChNames[eROCh::eB3S2    ]="Board4Cbl1SiPM2";
+  fROChNames[eROCh::eB3S3    ]="Board4Cbl1SiPM3";
+  fROChNames[eROCh::eB3S4    ]="Board4Cbl1SiPM4";
   fROChNames[eROCh::eB4S1    ]="Board1Cbl2SiPM1";
   fROChNames[eROCh::eB4S2    ]="Board1Cbl2SiPM2";
   fROChNames[eROCh::eB4S3    ]="Board1Cbl2SiPM3";
@@ -54,6 +55,7 @@ Universe::LinksNames()
   //fROChNames[eROCh::eB5S3    ]="Board5SiPM3";
   //fROChNames[eROCh::eB5S4    ]="Board5SiPM4";
   fROChNames[eROCh::eBTFCalo ]="BTFCalo";
+  // downstream
 
   for(auto it=fLinkRO2DetCh.begin();it!=fLinkRO2DetCh.end();++it){
     fLinkDet2ROCh.emplace(it->second,it->first);
